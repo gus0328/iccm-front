@@ -4,17 +4,17 @@
       <div class="message-page-con message-category-con">
         <Menu width="auto" active-name="unread" @on-select="handleSelect">
           <MenuItem name="unread">
-            <span class="category-title">未读消息</span><Badge style="margin-left: 10px" :count="messageUnreadCount"></Badge>
+            <span class="category-title">已收消息</span><Badge style="margin-left: 10px" :count="messageUnreadCount"></Badge><Badge style="margin-left: 10px" class-name="gray-dadge" :count="messageReadCount"></Badge>
           </MenuItem>
-          <MenuItem name="readed">
+         <!-- <MenuItem name="readed">
             <span class="category-title">已读消息</span><Badge style="margin-left: 10px" class-name="gray-dadge" :count="messageReadedCount"></Badge>
-          </MenuItem>
-          <MenuItem name="trash">
+          </MenuItem> -->
+         <MenuItem name="trash">
             <span class="category-title">回收站</span><Badge style="margin-left: 10px" class-name="gray-dadge" :count="messageTrashCount"></Badge>
           </MenuItem>
         </Menu>
       </div>
-      <div class="message-page-con message-list-con">
+      <div class="message-page-con message-list-con" style="width:300px;">
         <Spin fix v-if="listLoading" size="large"></Spin>
         <Menu
           width="auto"
@@ -22,29 +22,27 @@
           :class="titleClass"
           @on-select="handleView"
         >
-          <MenuItem v-for="item in messageList" :name="item.msg_id" :key="`msg_${item.msg_id}`">
+          <MenuItem v-for="item in messageList" :name="item" :key="`msg_${item.id}`">
             <div>
-              <p class="msg-title">{{ item.title }}</p>
-              <Badge status="default" :text="item.create_time" />
-              <Button
-                style="float: right;margin-right: 20px;"
-                :style="{ display: item.loading ? 'inline-block !important' : '' }"
-                :loading="item.loading"
-                size="small"
-                :icon="currentMessageType === 'readed' ? 'md-trash' : 'md-redo'"
-                :title="currentMessageType === 'readed' ? '删除' : '还原'"
-                type="text"
-                v-show="currentMessageType !== 'unread'"
-                @click.native.stop="removeMsg(item)"></Button>
+              <Icon v-if="item.status==0" type="md-mail" color="#FF9933" />
+              <Icon v-if="item.status==1" type="md-mail-open" color="#E8E8E8"/>
+              <span class="msg-title"> {{ item.title }}</span>
+              <!-- <Badge status="default" :text="item.sendTime" /> -->
             </div>
           </MenuItem>
+          <template>
+            <Page ref="dictPage" :total="messageCount" :current="messagePageNo" :page-size="messagePageSize"
+              @on-change="onMessagePageChange" simple />
+          </template>
         </Menu>
       </div>
       <div class="message-page-con message-view-con">
         <Spin fix v-if="contentLoading" size="large"></Spin>
         <div class="message-view-header">
           <h2 class="message-view-title">{{ showingMsgItem.title }}</h2>
-          <time class="message-view-time">{{ showingMsgItem.create_time }}</time>
+          <time class="message-view-time">{{ showingMsgItem.sendTime }}</time>
+          <h6 style="margin-left:50px;" class="message-view-title">{{ showingMsgItem.sendUser }}</h6>
+          <Button @click="messageUpdate(2)" v-if="showingMsgItem.status==0||showingMsgItem.status==1" type="error" style="margin-left:100px;" size="small">删除</Button>
         </div>
         <div v-html="messageContent"></div>
       </div>
@@ -53,83 +51,126 @@
 </template>
 
 <script>
-import { mapState, mapGetters, mapMutations, mapActions } from 'vuex'
-const listDic = {
-  unread: 'messageUnreadList',
-  readed: 'messageReadedList',
-  trash: 'messageTrashList'
-}
 export default {
   name: 'message_page',
   data () {
     return {
-      listLoading: true,
+      messageCount:0,
+      messagePageNo:1,
+      messagePageSize:10,
+      messageUnreadCount:0,
+      messageTrashCount:0,
+      messageReadCount:0,
+      listLoading: false,
       contentLoading: false,
       currentMessageType: 'unread',
       messageContent: '',
-      showingMsgItem: {}
+      showingMsgItem: {},
+      messageList:[]
     }
   },
-  computed: {
-    ...mapState({
-      messageUnreadList: state => state.user.messageUnreadList,
-      messageReadedList: state => state.user.messageReadedList,
-      messageTrashList: state => state.user.messageTrashList,
-      messageList () {
-        return this[listDic[this.currentMessageType]]
-      },
-      titleClass () {
-        return {
-          'not-unread-list': this.currentMessageType !== 'unread'
-        }
-      }
-    }),
-    ...mapGetters([
-      'messageUnreadCount',
-      'messageReadedCount',
-      'messageTrashCount'
-    ])
-  },
   methods: {
-    ...mapMutations([
-      //
-    ]),
-    ...mapActions([
-      'getContentByMsgId',
-      'getMessageList',
-      'hasRead',
-      'removeReaded',
-      'restoreTrash'
-    ]),
     stopLoading (name) {
       this[name] = false
     },
     handleSelect (name) {
       this.currentMessageType = name
+      this.messagePageNo = 1;
+      this.getMessageList();
+      this.showingMsgItem = {};
+      this.messageContent = "";
     },
-    handleView (msg_id) {
-      this.contentLoading = true
-      this.getContentByMsgId({ msg_id }).then(content => {
-        this.messageContent = content
-        const item = this.messageList.find(item => item.msg_id === msg_id)
-        if (item) this.showingMsgItem = item
-        if (this.currentMessageType === 'unread') this.hasRead({ msg_id })
-        this.stopLoading('contentLoading')
-      }).catch(() => {
-        this.stopLoading('contentLoading')
+    handleView (item) {
+      this.$ajax.request({
+        url:"/system/message/queryContentById",
+        method:"get",
+        params:{
+          id:item.id
+        }
+      }).then((res) => {
+        this.messageContent = res.data.data.message;
+        this.showingMsgItem = res.data.data;
+        if(res.data.data.status==0){
+          this.showingMsgItem.status = 1;
+          item.status = 1;
+          this.messageUnreadCount = this.messageUnreadCount -1;
+          this.messageReadCount = this.messageReadCount + 1;
+          this.messageUpdate(1);
+          this.$store.state.user.unreadCount = this.messageUnreadCount;
+        }
       })
+      // this.contentLoading = true
+      // this.getContentByMsgId({ msg_id }).then(content => {
+      //   this.messageContent = content
+      //   const item = this.messageList.find(item => item.msg_id === msg_id)
+      //   if (item) this.showingMsgItem = item
+      //   if (this.currentMessageType === 'unread') this.hasRead({ msg_id })
+      //   this.stopLoading('contentLoading')
+      // }).catch(() => {
+      //   this.stopLoading('contentLoading')
+      // })
     },
     removeMsg (item) {
       item.loading = true
       const msg_id = item.msg_id
       if (this.currentMessageType === 'readed') this.removeReaded({ msg_id })
       else this.restoreTrash({ msg_id })
+    },
+    getMessageList() {
+      this.listLoading = true;
+      let type = "accept";
+      if(this.currentMessageType=="trash"){
+        type = "del";
+      }
+      this.$ajax.request({
+        url:"/system/message/messageList",
+        method:"get",
+        params:{
+          type:type,
+          pageNum:this.messagePageNo,
+          pageSize:this.messagePageSize,
+          orderByColumn:"sendTime",
+          isAsc:"desc"
+        }
+      }).then((res) => {
+        this.listLoading = false;
+        if(this.currentMessageType=="unread"){
+          this.messageUnreadCount = res.data.unread;
+          this.messageReadCount = res.data.read;
+        }else if(this.currentMessageType=="trash"){
+          this.messageTrashCount = res.data.data.total;
+        }
+        this.messageList = res.data.data.rows;
+        this.messageCount = res.data.data.total;
+      })
+    },
+    titleClass () {
+      return {
+        'not-unread-list': this.currentMessageType !== 'unread'
+      }
+    },
+    onMessagePageChange(){
+      this.messagePageNo = num;
+      this.getMessageList();
+    },
+    messageUpdate(status){
+      let data = {"id":this.showingMsgItem.id,"status":status};
+      this.$ajax.request({
+        url:"/system/message/edit",
+        method:"post",
+        data:data
+      }).then((res) =>{
+        if(status==2){
+          this.messageContent = "";
+          this.getMessageList();
+        }
+      })
     }
   },
   mounted () {
-    this.listLoading = true
     // 请求获取消息列表
-    this.getMessageList().then(() => this.stopLoading('listLoading')).catch(() => this.stopLoading('listLoading'))
+    this.getMessageList();
+    // this.getMessageList().then(() => this.stopLoading('listLoading')).catch(() => this.stopLoading('listLoading'))
   }
 }
 </script>
@@ -151,7 +192,7 @@ export default {
     }
     &.message-view-con{
       position: absolute;
-      left: 446px;
+      left: 500px;
       top: 16px;
       right: 16px;
       bottom: 16px;

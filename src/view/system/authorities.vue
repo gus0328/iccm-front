@@ -56,15 +56,12 @@
           content: '您确定要同步数据？',
           onOk: function() {
             this.$ajax.request({
-              url: "/system/authorities/async",
+              url: "/system/authorities/sync",
               data: {},
               method: "post"
             }).then((res) => {
-              if (res.data.code == 200) {
-                object.queryTreeData();
-              } else {
-                object.$Message.error(res.data.msg);
-              }
+              object.$Message.success("同步成功");
+              object.queryTreeData();
             })
           }
         })
@@ -75,11 +72,7 @@
           data: {},
           method: "post"
         }).then((res) => {
-          if (res.data.code == 200) {
-            this.data = res.data.data;
-          } else {
-            object.$Message.error(res.data.msg);
-          }
+          this.data = res.data.data;
         })
       },
       foldChange(){

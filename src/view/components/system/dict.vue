@@ -9,13 +9,10 @@
           <label style="margin-right:10px;">字典类型</label><Input v-model="form.dictType" style="width:200px"></Input>
         </Form-item>
         <Form-item prop="status">
-          <label style="margin-right:10px;">字典状态</label>
-          <Select class="form-input" v-model="form.status">
-            <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-          </Select>
+          <label style="margin-right:10px;">字典状态</label><Input v-model="form.status" style="width:200px"></Input>
         </Form-item>
         <Form-item>
-          <Button type="primary" @click="query">查询</Button>
+          <Button type="primary" @click="queryDicts">查询</Button>
         </Form-item>
         <Form-item>
           <Button @click="resetQueryForm">重置</Button>
@@ -162,19 +159,6 @@
         dictPageNo: 1,
         dictPageSizeOpt: [50, 100, 150, 200],
         isfold: false,
-        statusList: [{
-            value: "",
-            label: "所有"
-          },
-          {
-            value: "0",
-            label: "正常"
-          },
-          {
-            value: "1",
-            label: "停用"
-          }
-        ],
         form: {
           dictName: "",
           dictType: "",
@@ -325,9 +309,13 @@
               data: this.addTypeForm,
               method: "post"
             }).then((res) => {
-              this.$Message.success(res.data.msg);
-              this.typeWdClose();
-              this.queryDicts();
+              if (res.data.code == 200) {
+                this.$Message.success(res.data.msg);
+                this.typeWdClose();
+                this.queryDicts();
+              } else {
+                this.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -340,9 +328,13 @@
               data: this.editTypeForm,
               method: "post"
             }).then((res) => {
-              this.$Message.success(res.data.msg);
-              this.typeEditWdClose();
-              this.queryDicts();
+              if (res.data.code == 200) {
+                this.$Message.success(res.data.msg);
+                this.typeEditWdClose();
+                this.queryDicts();
+              } else {
+                this.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -359,9 +351,13 @@
               data: this.editDataForm,
               method: "post"
             }).then((res) => {
-              this.$Message.success(res.data.msg);
-              this.dataEditWdClose();
-              this.queryDataByType();
+              if (res.data.code == 200) {
+                this.$Message.success(res.data.msg);
+                this.dataEditWdClose();
+                this.queryDataByType();
+              } else {
+                this.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -397,9 +393,13 @@
           data: this.form,
           method: "post"
         }).then((res) => {
-          this.data1 = res.data.data.rows;
-          this.dictCount = res.data.data.total;
-          this.loading = false;
+          if (res.data.code == 200) {
+            this.data1 = res.data.data.rows;
+            this.dictCount = res.data.data.total;
+            this.loading = false;
+          } else {
+            this.$Message.error(res.data.msg);
+          }
         })
       },
       resetQueryForm() {
@@ -428,8 +428,12 @@
               },
               method: "post"
             }).then((res) => {
-              object.$Message.success(res.data.msg);
-              object.queryDataByType();
+              if (res.data.code == 200) {
+                object.$Message.success(res.data.msg);
+                object.queryDataByType();
+              } else {
+                object.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -452,8 +456,12 @@
               },
               method: "post"
             }).then((res) => {
-              object.$Message.success(res.data.msg);
-              object.queryDicts();
+              if (res.data.code == 200) {
+                object.$Message.success(res.data.msg);
+                object.queryDicts();
+              } else {
+                object.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -476,13 +484,13 @@
           },
           method: "post"
         }).then((res) => {
-          this.dataLoading = false;
-          this.data2 = res.data.data;
+          if (res.data.code == 200) {
+            this.dataLoading = false;
+            this.data2 = res.data.data;
+          } else {
+            this.$Message.error(res.data.msg);
+          }
         })
-      },
-      query(){
-        this.dictPageNo = 1;
-        this.queryDicts();
       }
     },
     mounted() {

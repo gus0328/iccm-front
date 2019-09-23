@@ -6,7 +6,7 @@
           <label style="margin-right:10px;">菜单标题</label><Input v-model="form.menuTitle" style="width:200px"></Input>
         </Form-item>
         <Form-item prop="menuType">
-           <label style="margin-right:10px;">菜单类型</label>
+          <label style="margin-right:10px;">菜单类型</label>
           <Select class="form-input" v-model="form.menuType">
             <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
@@ -307,7 +307,12 @@
           data: this.form,
           method: "post"
         }).then((res) => {
-          this.data = res.data;
+          if (res.data.code == 200) {
+            this.data = res.data.data;
+          } else {
+            this.$Message.error(res.data.msg);
+          }
+
         })
       },
       addRoot() {
@@ -318,14 +323,10 @@
               data: this.addRootForm,
               method: "post"
             }).then((res) => {
-              if (res.data.code == 200) {
-                this.$Message.success(res.data.msg);
-                this.rootWdClose();
-                this.queryMenus();
-                this.getTreeData();
-              } else {
-                this.$Message.error(res.data.msg);
-              }
+              this.$Message.success(res.data.msg);
+              this.rootWdClose();
+              this.queryMenus();
+              this.getTreeData();
             })
           }
         })
@@ -350,14 +351,10 @@
               data: this.editForm,
               method: "post"
             }).then((res) => {
-              if (res.data.code == 200) {
-                this.$Message.success(res.data.msg);
-                this.close();
-                this.queryMenus();
-                this.getTreeData();
-              } else {
-                this.$Message.error(res.data.msg);
-              }
+              this.$Message.success(res.data.msg);
+              this.close();
+              this.queryMenus();
+              this.getTreeData();
             })
           }
         })
@@ -395,13 +392,9 @@
               },
               method: "post"
             }).then((res) => {
-              if (res.data.code == 200) {
-                object.$Message.success(res.data.msg);
-                object.queryMenus();
-                object.getTreeData()
-              } else {
-                object.$Message.error(res.data.msg);
-              }
+              object.$Message.success(res.data.msg);
+              object.queryMenus();
+              object.getTreeData()
             })
           }
         })
@@ -412,7 +405,7 @@
           url: "/system/menu/treeSelect",
           method: "get"
         }).then((res) => {
-          this.treeData = res.data;
+          this.treeData = res.data.data;
         })
       },
       selectParent(title, value) {
@@ -427,12 +420,6 @@
       this.menuTableHeight = this.$refs.showContent.offsetHeight - 75;
       this.queryMenus();
       this.getTreeData();
-      this.$ajax.request({
-        url:"/v1/user",
-        method:"get"
-      }).then((res) => {
-        alert(JSON.stringify(res.data))
-      })
     }
   }
 </script>

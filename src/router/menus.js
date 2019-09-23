@@ -1,5 +1,25 @@
 import Main from '@/components/main'
-export default [
+import parentView from '@/components/parent-view'
+export default [{
+    path: '/contract',
+    name: 'contract',
+    component: Main,
+    meta: {
+      icon: 'logo-buffer',
+      title: '合同管理'
+    },
+    children: [
+      {
+          path: '/contractData',
+          name: 'contractData',
+          meta: {
+            title: '数据导入',
+            icon: 'md-home'
+          },
+          component: () => import('@/view/contract/contract-data')
+        }
+    ]
+  },
   {
     path: '/system',
     name: 'system',
@@ -8,8 +28,7 @@ export default [
       icon: 'logo-buffer',
       title: '系统管理'
     },
-    children: [
-      {
+    children: [{
         path: '/depart',
         name: 'depart',
         meta: {
@@ -53,6 +72,54 @@ export default [
           icon: 'md-home'
         },
         component: () => import('@/view/system/menu')
+      },
+      {
+        path: '/user',
+        name: 'user',
+        meta: {
+          title: '用户管理',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/system/user')
+      },
+      {
+        path: '/post',
+        name: 'post',
+        meta: {
+          title: '岗位管理',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/system/post')
+      },
+      {
+        path: '/log',
+        name: 'log',
+        meta: {
+          title: '日志管理',
+          icon: 'md-home',
+          // access: ['super_admin'],
+          showAlways: true
+        },
+        component: parentView,
+        children: [{
+            path: '/loginLog',
+            name: 'loginLog',
+            meta: {
+              title: '登录日志',
+              icon: 'md-home'
+            },
+            component: () => import('@/view/system/log/login-log')
+          },
+          {
+            path: '/operLog',
+            name: 'operLog',
+            meta: {
+              title: '操作日志',
+              icon: 'md-home'
+            },
+            component: () => import('@/view/system/log/oper-log')
+          }
+        ]
       }
     ]
   }

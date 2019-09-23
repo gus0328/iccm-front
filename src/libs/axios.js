@@ -1,6 +1,9 @@
 import axios from 'axios'
 import store from '@/store'
 // import { Spin } from 'iview'
+import { Message } from 'iview'
+import { Modal } from 'iview'
+import router from '../router'
 const addErrorLog = errorInfo => {
   const { statusText, status, request: { responseURL } } = errorInfo
   let info = {
@@ -55,6 +58,18 @@ class HttpRequest {
       if(res.status == 601){
         store.dispatch('foreExit')
       }
+      if(res.data["code"]>200){
+        if(res.data["code"]==466){
+          let config = {title:"错误",content:res.data.msg,okText:"确定",onOk(){
+            store.dispatch('foreExit')
+          }}
+          Modal.error(config);
+          return Promise.reject(res.data.msg);
+        }
+        let config = {title:"错误",content:res.data.msg,okText:"确定",cancelText:"取消"}
+        Modal.error(config);
+        return Promise.reject(res.data.msg);
+      }
       const { data, status } = res
 
       return { data, status }
@@ -75,6 +90,7 @@ class HttpRequest {
     })
   }
   request (options) {
+    axios.defaults.headers.common["request_source"] = "PC";
     const instance = axios.create()
     options = Object.assign(this.getInsideConfig(), options)
     this.interceptors(instance, options.url)

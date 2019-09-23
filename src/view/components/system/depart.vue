@@ -6,10 +6,7 @@
           <label style="margin-right:10px;">部门名称</label><Input v-model="form.deptName" style="width:200px"></Input>
         </Form-item>
         <Form-item prop="status">
-          <label style="margin-right:10px;">部门状态</label>
-          <Select class="form-input" v-model="form.status">
-            <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
-          </Select>
+          <label style="margin-right:10px;">部门状态</label><Input v-model="form.status" style="width:200px"></Input>
         </Form-item>
         <Form-item>
           <Button type="primary" @click="queryDeparts">查询</Button>
@@ -110,19 +107,6 @@
         addRootTitle: "新增",
         editModalTitle: "新增",
         treeSelectFlag: false,
-        statusList: [{
-            value: "",
-            label: "所有"
-          },
-          {
-            value: "0",
-            label: "正常"
-          },
-          {
-            value: "1",
-            label: "停用"
-          }
-        ],
         addRootForm: {
           parentId: 0,
           deptName: "",
@@ -209,15 +193,11 @@
             },
           ],
           orderNum: [{
-              required: true,
-              message: '排序号不能为空',
-              trigger: 'blur'
-            },
-            {
-              validator: this.$validateNumber,
-              trigger: 'blur'
-            }
-          ],
+            required: true,
+            type: 'number',
+            message: '请输入排序号',
+            trigger: 'blur'
+          }],
           leader: [{
             required: true,
             type: 'string',
@@ -251,15 +231,11 @@
             },
           ],
           orderNum: [{
-              required: true,
-              message: '排序号不能为空',
-              trigger: 'blur'
-            },
-            {
-              validator: this.$validateNumber,
-              trigger: 'blur'
-            }
-          ],
+            required: true,
+            type: 'number',
+            message: '请输入排序号',
+            trigger: 'blur'
+          }],
           leader: [{
             required: true,
             type: 'string',
@@ -294,7 +270,11 @@
           data: this.form,
           method: "post"
         }).then((res) => {
-          this.data = res.data.data;
+		  if(res.data.code==200){
+			this.data = res.data.data;
+		  }else{
+			this.$Message.error(res.data.msg);
+		  }
         })
       },
       addRoot() {
@@ -305,10 +285,14 @@
               data: this.addRootForm,
               method: "post"
             }).then((res) => {
-              this.$Message.success(res.data.msg);
-              this.rootWdClose();
-              this.queryDeparts();
-              this.getTreeData();
+              if (res.data.code == 200) {
+                this.$Message.success(res.data.msg);
+                this.rootWdClose();
+                this.queryDeparts();
+                this.getTreeData();
+              } else {
+                this.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -333,10 +317,14 @@
               data: this.editForm,
               method: "post"
             }).then((res) => {
-              this.$Message.success(res.data.msg);
-              this.close();
-              this.queryDeparts();
-              this.getTreeData();
+              if (res.data.code == 200) {
+                this.$Message.success(res.data.msg);
+                this.close();
+                this.queryDeparts();
+                this.getTreeData();
+              } else {
+                this.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -344,14 +332,14 @@
       add(scope) {
         this.editModalTitle = "新增";
         this.treeSelectFlag = false;
-        this.editForm = Object.assign({}, this.editFormCopy);
+        this.editForm = Object.assign({},this.editFormCopy);
         this.editForm.parentName = scope.row.deptName;
         this.editForm.parentId = scope.row.deptId;
         this.editForm.status = '0';
         this.editModal = true;
       },
       edit(scope) {
-        this.editForm = Object.assign({}, scope.row);
+        this.editForm = Object.assign({},scope.row);
         if (this.editForm.parentId == 0) {
           this.editForm["parentName"] = "一级部门";
           this.treeSelectFlag = true;
@@ -374,9 +362,13 @@
               },
               method: "post"
             }).then((res) => {
-              object.$Message.success(res.data.msg);
-              object.queryDeparts();
-              object.getTreeData()
+              if (res.data.code == 200) {
+                object.$Message.success(res.data.msg);
+                object.queryDeparts();
+                object.getTreeData()
+              } else {
+                object.$Message.error(res.data.msg);
+              }
             })
           }
         })
@@ -387,7 +379,11 @@
           url: "/system/dept/treeSelect",
           method: "get"
         }).then((res) => {
-          this.treeData = res.data.data;
+		  if(res.data.code==200){
+			this.treeData = res.data.data;
+		  }else{
+			this.$Message.error(res.data.msg);
+		  }
         })
       },
       selectParent(title, value) {

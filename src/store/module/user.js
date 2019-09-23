@@ -15,6 +15,7 @@ import {
 } from '@/libs/util'
 import avatar from '@/assets/images/avatar.jpeg'
 import { Message } from 'iview'
+import Vue from 'vue'
 export default {
   state: {
     username: '',
@@ -146,6 +147,7 @@ export default {
             commit('setAccess', data.access || [])
             commit('setHasGetInfo', true)
             commit('setPermission', data)
+			commit("setMessageCount",data.unreadCount)
             resolve(data)
           }).catch(err => {
             reject(err)

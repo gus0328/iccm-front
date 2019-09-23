@@ -98,13 +98,16 @@ export default {
   },
   mutations: {
     setPermission (state, {name,permission}) {
-      if(name=='super_admin'){
-        state.permission = routers.concat(menus)
-      }else{
-        let newMenus = cloneMenus(menus)
-        let filteredMenus = filterMenus(newMenus,permission)
-        state.permission = routers.concat(filteredMenus)
-      }
+      // if(name=='super_admin'){
+      //   state.permission = routers.concat(menus)
+      // }else{
+      //   let newMenus = cloneMenus(menus)
+      //   let filteredMenus = filterMenus(newMenus,permission)
+      //   state.permission = routers.concat(filteredMenus)
+      // }
+	  let newMenus = cloneMenus(menus)
+	  let filteredMenus = filterMenus(newMenus,permission)
+	  state.permission = routers.concat(filteredMenus)
     },
     setBreadCrumb (state, route) {
       state.breadCrumbList = getBreadCrumbList(route, state.homeRoute)

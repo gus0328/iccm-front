@@ -20,6 +20,10 @@ export default {
     dev: '',
     pro: ''
   },
+  wbUrl:{
+	dev:'ws://localhost:8090',
+	pro:''
+  },
   /**
    * @description 默认打开的首页的路由name值，默认为home
    */

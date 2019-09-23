@@ -35,11 +35,32 @@ const validateNumber = (rule, value, callback) => {
     callback();
   }
 };
-Vue.prototype.$validateNumber =validateNumber;
-  /**
-   * @description 注册admin内置插件
-   */
-  installPlugin(Vue)
+const validatePhone = (rule, value, callback) => {
+  if (!value) {
+    return callback(new Error('手机号不能为空'));
+  } else if (!/^1[34578]\d{9}$/.test(value)) {
+    callback('手机号格式不正确');
+  } else {
+    callback();
+  }
+};
+const validateEmail = (rule, value, callback) => {
+  var reg = /^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/;
+  if (!value) {
+    return callback(new Error('邮箱不能为空'));
+  } else if (new RegExp(reg).test(value) == false) {
+    callback('邮箱格式不正确');
+  } else {
+    callback();
+  }
+};
+Vue.prototype.$validateNumber = validateNumber
+Vue.prototype.$validatePhone = validatePhone
+Vue.prototype.$validateEmail = validateEmail
+/**
+ * @description 注册admin内置插件
+ */
+installPlugin(Vue)
 /**
  * @description 生产环境关掉提示
  */

@@ -53,7 +53,6 @@
     },
     methods: {
       treeSelect(array, row) {
-        alert(row.value)
         this.value = row.value;
       },
       treeDataControl() {
@@ -113,7 +112,7 @@
             h('span', data.title)
           ])
         ]);
-      },
+      }
     },
     mounted() {
       let target = "#" + this.id + " .ivu-select-selection";
