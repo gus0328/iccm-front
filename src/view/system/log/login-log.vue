@@ -30,8 +30,8 @@
     </div>
     <Table class="content-table" :loading="loading" :columns="columns" :data="data" :height="rootTableHeight">
       <template slot="status" slot-scope="{ row }">
-        <div style="width:40px;color:white;border-radius:10px;background: green;margin: auto;" v-if="row.status==0">成功</div>
-        <div style="width:40px;color: white;border-radius:10px;background: red;margin: auto;" v-else>失败</div>
+        <div style="width:40px;color:white;border-radius:10px;background: #19be6b;margin: auto;" v-if="row.status==0">成功</div>
+        <div style="width:40px;color: white;border-radius:10px;background: #ed4014;margin: auto;" v-else>失败</div>
       </template>
     </Table>
     <template>

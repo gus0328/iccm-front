@@ -2,11 +2,11 @@
   <div ref="showContent" style="width:100%;height:100%">
     <div style="width:100%;height:37px;line-height:37px;">
       <Form ref="queryFormRef" inline :model="form">
-        <Form-item prop="postCode">
-          <label style="margin-right:10px;">岗位编码</label><Input v-model="form.postCode" style="width:200px"></Input>
+        <Form-item prop="itemCode">
+          <label style="margin-right:10px;">设备编号</label><Input v-model="form.itemCode" style="width:200px"></Input>
         </Form-item>
-        <Form-item prop="postName">
-          <label style="margin-right:10px;">岗位名称</label><Input v-model="form.postName" style="width:200px"></Input>
+        <Form-item prop="itemName">
+          <label style="margin-right:10px;">设备名称</label><Input v-model="form.itemName" style="width:200px"></Input>
         </Form-item>
         <Form-item>
           <Button type="primary" @click="query">查询</Button>
@@ -24,20 +24,21 @@
       </template>
     </Table>
     <template>
-      <Page ref="postPage" :total="postCount" :current="postPageNo" :page-size="postPageSize" :page-size-opts="postPageSizeOpt"
-        @on-change="onPostPageChange" @on-page-size-change="onPostPageSizeChange" show-sizer show-elevator show-total />
+      <Page ref="dictPage" :total="deviceCount" :current="devicePageNo" :page-size="devicePageSize" :page-size-opts="devicePageSizeOpt"
+        @on-change="onDevicePageChange" @on-page-size-change="onDevicePageSizeChange" show-sizer show-elevator show-total />
     </template>
     <Modal v-model="editModal" width="480" :title="editTitle" :mask-closable="false" :closable="false">
       <div style="text-align:center">
         <Form ref="editForm" :model="editForm" :rules="editRules" inline :label-width="70">
-          <Form-item label="岗位名称" prop="postName">
-            <Input class="form-input" v-model="editForm.postName" placeholder="请输入"></Input>
+          <Form-item label="设备编号" prop="itemCode">
+            <Input class="form-input" v-model="editForm.itemCode" placeholder="请输入"></Input>
           </Form-item>
-          <Form-item label="岗位编码" prop="postCode">
-            <Input class="form-input" v-model="editForm.postCode" placeholder="请输入"></Input>
+          <Form-item label="设备名称" prop="itemName">
+            <Input class="form-input" v-model="editForm.itemName" placeholder="请输入"></Input>
           </Form-item>
-          <Form-item label="排序编号" prop="postSort">
-            <Input class="form-input" v-model="editForm.postSort" placeholder="请输入"></Input>
+          <Form-item label="用途" prop="purpose">
+            <Input class="form-input" v-model="editForm.purpose" type="textarea" :autosize="{minRows: 4,maxRows: 10}"
+              placeholder="请输入"></Input>
           </Form-item>
           <Form-item label="备注" prop="remark">
             <Input class="form-input" v-model="editForm.remark" type="textarea" :autosize="{minRows: 4,maxRows: 10}"
@@ -65,59 +66,49 @@
         rootTableHeight: 400,
         editModal: false,
         loading: false,
-        postCount: 0,
-        postPageSize: 50,
-        postPageNo: 1,
-        postPageSizeOpt: [50, 100, 150, 200],
+        deviceCount: 0,
+        devicePageSize: 50,
+        devicePageNo: 1,
+        devicePageSizeOpt: [50, 100, 150, 200],
         editTitle: "新增",
         editForm: {
-          postName: "",
-          postCode: "",
-          postSort: "",
+          itemCode: "",
+          itemName: "",
+          purpose: "",
           remark: ""
         },
         editFormCopy: {
-          postName: "",
-          postCode: "",
-          postSort: "",
+          itemCode: "",
+          itemName: "",
+          purpose: "",
           remark: ""
         },
         editRules: {
-          postName: [{
+          itemName: [{
             required: true,
-            message: '岗位名称不能为空',
+            message: '请输入设备名称',
             trigger: 'blur'
           }],
-          postSort: [{
-              required: true,
-              message: '排序号不能为空',
-              trigger: 'blur'
-            },
-            {
-              validator: this.$validateNumber,
-              trigger: 'blur'
-            }
-          ],
-          postCode: [{
+          itemCode: [{
             required: true,
             type: 'string',
-            message: '请输入菜单名称',
+            message: '请输入设备编号',
             trigger: 'blur'
           }],
         },
         columns: [{
-            title: '岗位名称',
-            key: 'postName',
+            title: '设备编号',
+            key: 'itemCode',
             align: 'center'
           },
           {
-            title: '岗位编码',
-            key: 'postCode',
+            title: '设备名称',
+            key: 'itemName',
             align: 'center'
           },
           {
-            title: '排序编号',
-            key: 'postSort',
+            title: '用途',
+            key: 'purpose',
             align: 'center'
           },
           {
@@ -141,9 +132,9 @@
       }
     },
     methods: {
-      queryPosts() {
+      queryDevices() {
         this.loading = true;
-        let url = "/system/post/pageList?pageNum=" + this.postPageNo + "&pageSize=" + this.postPageSize +
+        let url = "/work/gasDevice/pageList?pageNum=" + this.devicePageNo + "&pageSize=" + this.devicePageSize +
           "&orderByColumn=createTime&isAsc=desc"
         this.$ajax.request({
           url: url,
@@ -151,21 +142,21 @@
           method: "post"
         }).then((res) => {
           this.data = res.data.data.rows;
-          this.postCount = res.data.data.total;
+          this.deviceCount = res.data.data.total;
           this.loading = false;
         })
       },
       resetQueryForm() {
         this.$refs.queryFormRef.resetFields();
       },
-      onPostPageChange(num) {
-        this.postPageNo = num;
-        this.queryPosts();
+      onDevicePageChange(num) {
+        this.devicePageNo = num;
+        this.queryDevices();
       },
-      onPostPageSizeChange(pageSize) {
-        this.postPageSize = pageSize;
-        this.postPageNo = 1;
-        this.queryPosts();
+      onDevicePageSizeChange(pageSize) {
+        this.devicePageSize = pageSize;
+        this.devicePageNo = 1;
+        this.queryDevices();
       },
       edit(row) {
         this.editForm = Object.assign({}, row);
@@ -179,14 +170,14 @@
           content: '您确定删除此数据？',
           onOk: function() {
             this.$ajax.request({
-              url: "/system/post/remove",
+              url: "/work/gasDevice/remove",
               data: {
-                "id": row.postId
+                "id": row.id
               },
               method: "post"
             }).then((res) => {
               object.$Message.success(res.data.msg);
-              object.queryPosts();
+              object.queryDevices();
             })
           }
         })
@@ -199,9 +190,9 @@
       editSave() {
         this.$refs.editForm.validate((valid) => {
           if (valid) {
-            let url = "/system/post/edit";
+            let url = "/work/gasDevice/edit";
             if (this.editTitle == "新增") {
-              url = "/system/post/add";
+              url = "/work/gasDevice/add";
             }
             this.$ajax.request({
               url: url,
@@ -210,7 +201,7 @@
             }).then((res) => {
               this.$Message.success(res.data.msg);
               this.editWdClose();
-              this.queryPosts();
+              this.queryDevices();
             })
           }
         })
@@ -220,13 +211,13 @@
         this.$refs.editForm.resetFields();
       },
       query(){
-        this.postPageNo = 1;
-        this.queryPosts();
+        this.devicePageNo = 1;
+        this.queryDevices();
       }
     },
     mounted() {
       this.rootTableHeight = this.$refs.showContent.offsetHeight - 110;
-      this.queryPosts();
+      this.queryDevices();
     }
   }
 </script>

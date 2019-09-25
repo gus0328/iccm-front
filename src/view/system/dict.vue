@@ -28,8 +28,8 @@
         <div @click="showDetails(row)" style="color: #337ab7;cursor: pointer;">{{row.dictType}}</div>
       </template>
       <template slot-scope="{ row }" slot="status">
-        <div style="width:40px;color:white;border-radius:10px;background: green;margin: auto;" v-if="row.status==0">正常</div>
-        <div style="width:40px;color: white;border-radius:10px;background: red;margin: auto;" v-else>停用</div>
+        <div style="width:40px;color:white;border-radius:10px;background: #19be6b;margin: auto;" v-if="row.status==0">正常</div>
+        <div style="width:40px;color: white;border-radius:10px;background: #ed4014;margin: auto;" v-else>停用</div>
       </template>
       <template slot-scope="{ row, index }" slot="action">
         <Button style="margin-right:10px;" size="small" type="primary" @click="edit(row)">编辑</Button>

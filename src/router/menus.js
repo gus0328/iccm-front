@@ -1,6 +1,50 @@
 import Main from '@/components/main'
 import parentView from '@/components/parent-view'
 export default [{
+    path: '/work',
+    name: 'work',
+    component: Main,
+    meta: {
+      icon: 'logo-buffer',
+      title: '作业监控'
+    },
+    children: [{
+      path: '/wearDevice',
+      name: 'wearDevice',
+      meta: {
+        title: '穿戴设备',
+        icon: 'md-home'
+      },
+      component: () => import('@/view/work/wearDevice')
+    },
+    {
+      path: '/gasDevice',
+      name: 'gasDevice',
+      meta: {
+        title: '气体监测设备',
+        icon: 'md-home'
+      },
+      component: () => import('@/view/work/gasDevice')
+    },
+    {
+      path: '/monitorDevice',
+      name: 'monitorDevice',
+      meta: {
+        title: '监控设备',
+        icon: 'md-home'
+      },
+      component: () => import('@/view/work/monitorDevice')
+    },
+    {
+      path: '/siteWork',
+      name: 'siteWork',
+      meta: {
+        title: '现场作业',
+        icon: 'md-home'
+      },
+      component: () => import('@/view/work/siteWork')
+    }]
+  }, {
     path: '/contract',
     name: 'contract',
     component: Main,
@@ -8,17 +52,15 @@ export default [{
       icon: 'logo-buffer',
       title: '合同管理'
     },
-    children: [
-      {
-          path: '/contractData',
-          name: 'contractData',
-          meta: {
-            title: '数据导入',
-            icon: 'md-home'
-          },
-          component: () => import('@/view/contract/contract-data')
-        }
-    ]
+    children: [{
+      path: '/contractData',
+      name: 'contractData',
+      meta: {
+        title: '数据导入',
+        icon: 'md-home'
+      },
+      component: () => import('@/view/contract/contract-data')
+    }]
   },
   {
     path: '/system',

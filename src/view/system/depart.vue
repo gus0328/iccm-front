@@ -28,8 +28,8 @@
         <Button size="small" type="error" @click="del(scope)">删除</Button>
       </template>
       <template slot="status" slot-scope="scope">
-        <div style="width:40px;color:white;border-radius:10px;background: green;margin: auto;" v-if="scope.row.status==0">正常</div>
-        <div style="width:40px;color: white;border-radius:10px;background: red;margin: auto;" v-else>停用</div>
+        <div style="width:40px;color:white;border-radius:10px;background: #19be6b;margin: auto;" v-if="scope.row.status==0">正常</div>
+        <div style="width:40px;color: white;border-radius:10px;background: #ed4014;margin: auto;" v-else>停用</div>
       </template>
     </tree-table>
     <Modal v-model="addRootModal" width="480" :title="addRootTitle" :mask-closable="false" :closable="false">

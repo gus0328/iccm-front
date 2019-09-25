@@ -18,6 +18,7 @@ import TreeTable from 'tree-table-vue'
 import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
 import axios from '@/libs/api.request'
+import dateUtils from '@/libs/dateUtils'
 // 实际打包时应该不引入mock
 /* eslint-disable */
 // if (process.env.NODE_ENV !== 'production') require('@/mock')
@@ -57,6 +58,7 @@ const validateEmail = (rule, value, callback) => {
 Vue.prototype.$validateNumber = validateNumber
 Vue.prototype.$validatePhone = validatePhone
 Vue.prototype.$validateEmail = validateEmail
+Vue.prototype.$dateUtils = dateUtils
 /**
  * @description 注册admin内置插件
  */
@@ -83,3 +85,20 @@ new Vue({
   store,
   render: h => h(App)
 })
+
+//日期格式化
+Date.prototype.Format = function (fmt) { //author: meizz
+    var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "H+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds() //毫秒
+    };
+    if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    for (var k in o)
+    if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+    return fmt;
+}
