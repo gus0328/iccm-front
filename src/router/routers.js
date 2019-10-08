@@ -51,11 +51,31 @@ export default [
   },
   {
     path: '*',
-    name: 'error_404',
+    name: 'login',
     meta: {
       hideInMenu: true
     },
-    component: () => import('@/view/error-page/404.vue')
+    component: () => import('@/view/login/login.vue')
+  },
+  {
+    path: '/own',
+    name: 'own',
+    component: Main,
+    meta: {
+      hideInBread: true,
+      hideInMenu: true
+    },
+    children: [
+      {
+        path: '/own_space',
+        name: 'own_space',
+        meta: {
+          icon: 'md-notifications',
+          title: '个人中心'
+        },
+        component: () => import('@/view/own-space/own-space.vue')
+      }
+    ]
   },
   {
     path: '/message',
@@ -76,5 +96,5 @@ export default [
         component: () => import('@/view/single-page/message/index.vue')
       }
     ]
-  },
+  }
 ]

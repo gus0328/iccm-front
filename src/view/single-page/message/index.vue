@@ -128,9 +128,7 @@ export default {
         params:{
           type:type,
           pageNum:this.messagePageNo,
-          pageSize:this.messagePageSize,
-          orderByColumn:"sendTime",
-          isAsc:"desc"
+          pageSize:this.messagePageSize
         }
       }).then((res) => {
         this.listLoading = false;

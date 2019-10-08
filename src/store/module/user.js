@@ -13,9 +13,13 @@ import {
   setToken,
   getToken
 } from '@/libs/util'
-import avatar from '@/assets/images/avatar.jpeg'
-import { Message } from 'iview'
+// import avatar from '@/assets/images/avatar.jpeg'
+import {
+  Message
+} from 'iview'
 import Vue from 'vue'
+import config from '@/config'
+const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
 export default {
   state: {
     username: '',
@@ -91,14 +95,14 @@ export default {
     }, {
       username,
       password,
-	  validateCode
+      validateCode
     }) {
       username = username.trim()
       return new Promise((resolve, reject) => {
         login({
           username,
           password,
-		  validateCode
+          validateCode
         }).then(res => {
           const data = res.data
           if (data.code == 200) {
@@ -141,13 +145,13 @@ export default {
         try {
           getUserInfo(state.token).then(res => {
             const data = res.data
-            commit('setAvatar', avatar)
+            commit('setAvatar', baseUrl+data.avatar)
             commit('setusername', data.name)
             commit('setUserId', data.user_id)
             commit('setAccess', data.access || [])
             commit('setHasGetInfo', true)
             commit('setPermission', data)
-			commit("setMessageCount",data.unreadCount)
+            commit("setMessageCount", data.unreadCount)
             resolve(data)
           }).catch(err => {
             reject(err)

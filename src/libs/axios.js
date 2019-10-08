@@ -90,6 +90,7 @@ class HttpRequest {
     })
   }
   request (options) {
+    axios.defaults.withCredentials = true;//携带cookie
     axios.defaults.headers.common["request_source"] = "PC";
     const instance = axios.create()
     options = Object.assign(this.getInsideConfig(), options)

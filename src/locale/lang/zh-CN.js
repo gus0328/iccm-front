@@ -28,6 +28,7 @@ export default {
   log:"日志管理",
   operLog:"操作日志",
   contract:"合同管理",
+  own_space:"个人中心",
   contractData:"数据导入",
   anthorities:'权限管理',
   update_table_page: '上传CSV文件',

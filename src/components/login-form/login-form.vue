@@ -31,6 +31,8 @@
   </Form>
 </template>
 <script>
+import config from '@/config'
+const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
 export default {
   name: 'LoginForm',
   props: {
@@ -71,7 +73,7 @@ export default {
         rememberMe:false
       },
       submitLoading:false,
-      validImg:"captcha/captchaImage?type=math"
+      validImg:baseUrl+"/captcha/captchaImage?type=math"
     }
   },
   computed: {
@@ -101,7 +103,7 @@ export default {
       this.submitLoading = false;
     },
     changeVaildCode(){
-      this.validImg = "captcha/captchaImage?type=math&s="+Math.random();
+      this.validImg = baseUrl+"/captcha/captchaImage?type=math&s="+Math.random();
     }
   }
 }

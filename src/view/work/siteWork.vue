@@ -83,7 +83,7 @@
           </Form-item>
           <Form-item>
             <label style="margin-right:10px;">作业人员</label>
-            <Button v-if="rowWorkStatus<3&&editTitle=='修改'" style="margin-right:220px;" icon="md-add" type="info" @click="workerOpen"></Button>
+            <Button v-if="rowWorkStatus<3" style="margin-right:220px;" icon="md-add" type="info" @click="workerOpen"></Button>
             <Button v-if="rowWorkStatus>2&&editTitle=='修改'" style="margin-right:220px;" icon="md-list-box" type="success" @click="workerShowOpen"></Button>
           </Form-item>
           <Form-item>
@@ -96,7 +96,7 @@
           </Form-item>
           <Form-item>
             <label style="margin-right:10px;">气体采集</label>
-            <Button v-if="rowWorkStatus<3&&editTitle=='修改'" style="margin-right:220px;" icon="md-add" type="info" @click="gasDeviceOpen"></Button>
+            <Button v-if="rowWorkStatus<3" style="margin-right:220px;" icon="md-add" type="info" @click="gasDeviceOpen"></Button>
             <Button v-if="rowWorkStatus>2&&editTitle=='修改'" style="margin-right:220px;" icon="md-list-box" type="success" @click="gasShowOpen"></Button>
           </Form-item>
           <Form-item>
@@ -109,7 +109,7 @@
           </Form-item>
           <Form-item>
             <label style="margin-right:10px;">视屏监控</label>
-            <Button v-if="rowWorkStatus<3&&editTitle=='修改'" style="margin-right:220px;" icon="md-add" type="info" @click="monitorDeviceOpen"></Button>
+            <Button v-if="rowWorkStatus<3" style="margin-right:220px;" icon="md-add" type="info" @click="monitorDeviceOpen"></Button>
             <Button v-if="rowWorkStatus>2&&editTitle=='修改'" style="margin-right:220px;" icon="md-list-box" type="success" @click="monitorShowOpen"></Button>
           </Form-item>
           <Form-item>
@@ -272,6 +272,11 @@ export default {
       },
       columns: [
         {
+          type:'index',
+          width:60,
+          algin:'center'
+        },
+        {
           title: '作业单号',
           key: 'id',
           align: 'center'
@@ -320,7 +325,7 @@ export default {
   methods: {
     queryworks() {
       this.loading = true;
-      let url = '/work/siteWork/pageList?pageNum=' + this.workPageNo + '&pageSize=' + this.workPageSize + '&orderByColumn=createTime&isAsc=desc';
+      let url = '/work/siteWork/pageList?pageNum=' + this.workPageNo + '&pageSize=' + this.workPageSize + '&orderByColumn=id&isAsc=desc';
       this.$ajax
         .request({
           url: url,
