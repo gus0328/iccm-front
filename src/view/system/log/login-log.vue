@@ -16,9 +16,9 @@
         </Form-item>
         <Form-item prop="params">
           <label style="margin-right:10px;">登录时间</label>
-          <DatePicker @on-change="beginTimeText" format="yyyy-MM-dd HH:mm:ss" type="datetime" :editable="false" placeholder="Select month"
+          <DatePicker v-model="date.begin" @on-change="beginTimeText" format="yyyy-MM-dd HH:mm:ss" type="datetime" :editable="false" placeholder="Select month"
             style="width: 160px"></DatePicker>~
-          <DatePicker @on-change="endTimeText" format="yyyy-MM-dd HH:mm:ss" type="datetime" :editable="false" placeholder="Select month" style="width: 160px"></DatePicker>
+          <DatePicker v-model="date.end" @on-change="endTimeText" format="yyyy-MM-dd HH:mm:ss" type="datetime" :editable="false" placeholder="Select month" style="width: 160px"></DatePicker>
         </Form-item>
         <Form-item>
           <Button type="primary" @click="query">查询</Button>
@@ -66,6 +66,10 @@
             beginTime: "",
             endTime: ""
           }
+        },
+        date:{
+          begin:"",
+          end:""
         },
         loading: false,
         data: [],
@@ -147,6 +151,7 @@
       },
       resetQueryForm() {
         this.$refs.queryFormRef.resetFields();
+        this.date = {begin:"",end:""}
       },
       onLogPageChange(num) {
         this.logPageNo = num;

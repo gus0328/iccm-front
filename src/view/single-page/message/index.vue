@@ -118,15 +118,16 @@ export default {
     },
     getMessageList() {
       this.listLoading = true;
+      let url = "/system/message/queryNormalList";
       let type = "accept";
       if(this.currentMessageType=="trash"){
         type = "del";
+        url = "/system/message/queryDelList";
       }
       this.$ajax.request({
-        url:"/system/message/messageList",
+        url:url,
         method:"get",
         params:{
-          type:type,
           pageNum:this.messagePageNo,
           pageSize:this.messagePageSize
         }

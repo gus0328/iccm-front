@@ -31,6 +31,8 @@ export default {
   own_space:"个人中心",
   contractData:"数据导入",
   anthorities:'权限管理',
+  updateNotice:'APP版本',
+  feedback:'意见反馈',
   update_table_page: '上传CSV文件',
   update_paste_page: '粘贴表格数据',
   multilevel: '多级菜单',

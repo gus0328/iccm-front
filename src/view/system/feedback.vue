@@ -2,20 +2,17 @@
   <div ref="showContent" style="width:100%;height:98%">
     <div style="width:100%;height:37px;line-height:37px;">
       <Form ref="queryFormRef" inline :model="form">
-        <Form-item prop="title">
-          <label style="margin-right:10px;">系统模块</label><Input v-model="form.title" style="width:100px"></Input>
-        </Form-item>
-        <Form-item prop="operName">
-          <label style="margin-right:10px;">操作人员</label><Input v-model="form.operName" style="width:100px"></Input>
+        <Form-item prop="createBy">
+          <label style="margin-right:10px;">提交人员</label><Input v-model="form.createBy" style="width:100px"></Input>
         </Form-item>
         <Form-item prop="status">
-          <label style="margin-right:10px;">操作状态</label>
+          <label style="margin-right:10px;">意见状态</label>
           <Select class="form-input" v-model="form.status" style="width:100px !important">
             <Option v-for="item in statusList" :value="item.value" :key="item.value">{{ item.label }}</Option>
           </Select>
         </Form-item>
         <Form-item prop="params">
-          <label style="margin-right:10px;">操作时间</label>
+          <label style="margin-right:10px;">提交时间</label>
           <DatePicker v-model="date.begin" @on-change="beginTimeText" type="datetime" :editable="false" placeholder="Select month"
             style="width: 160px"></DatePicker>~
           <DatePicker v-model="date.end" @on-change="endTimeText" type="datetime" :editable="false" placeholder="Select month" style="width: 160px"></DatePicker>
@@ -30,8 +27,9 @@
     </div>
     <Table class="content-table" :loading="loading" :columns="columns" :data="data" :height="rootTableHeight">
       <template slot="status" slot-scope="{ row }">
-        <div style="width:40px;color:white;border-radius:10px;background: #19be6b;margin: auto;" v-if="row.status==0">成功</div>
-        <div style="width:40px;color: white;border-radius:10px;background: #ed4014;margin: auto;" v-else>失败</div>
+        <div style="width:60px;color:white;border-radius:10px;background: #5cadff;margin: auto;" v-if="row.status==0">未查看</div>
+        <div style="width:60px;color: white;border-radius:10px;background: #e8eaec;margin: auto;" v-if="row.status==1">已查看</div>
+        <div style="width:60px;color: white;border-radius:10px;background: #19be6b;margin: auto;" v-if="row.status>=2">已回复</div>
       </template>
       <template slot="action" slot-scope="{ row }">
         <Button style="margin-right:10px;" size="small" type="primary" @click="details(row)">详情</Button>
@@ -41,41 +39,32 @@
       <Page ref="dictPage" :total="logCount" :current="logPageNo" :page-size="logPageSize" :page-size-opts="logPageSizeOpt"
         @on-change="onLogPageChange" @on-page-size-change="onLogPageSizeChange" show-sizer show-elevator show-total />
     </template>
-    <Modal v-model="dataDetailsModal" width="400px" title="操作详情" :mask-closable="false" :closable="false">
+    <Modal v-model="dataDetailsModal" width="600px" title="操作详情" :mask-closable="false" :closable="false">
       <div>
-        <Form>
-          <FormItem label="操作模块:">
-            {{detailsData.title}}/{{detailsData.operatorType}}
+        <Form ref="replyForm" :model="detailsData" :rules="editRules">
+          <FormItem label="提交信息:">
+            <Icon type="md-people" />{{detailsData.detpName}} <Icon type="md-person" />{{detailsData.createBy}} <Icon type="ios-time-outline" />{{detailsData.createTime}}
           </FormItem>
-          <FormItem label="登录信息:">
-            {{detailsData.operName}}/{{detailsData.deptName}}/{{detailsData.operIp}}/{{detailsData.operLocation}}
+          <FormItem label="主题:">
+            {{detailsData.title}}
           </FormItem>
-          <FormItem label="请求地址:">
-            {{detailsData.operUrl}}
+          <FormItem label="意见/建议:">
+            {{detailsData.content}}
           </FormItem>
-          <FormItem label="请求方式:">
-            {{detailsData.requestMethod}}
+          <FormItem v-if="detailsData.status>=2" label="回复时间:">
+            {{detailsData.updateTime}}
           </FormItem>
-          <FormItem label="操作方法:">
-            {{detailsData.method}}
+          <FormItem v-if="detailsData.status>=2" label="回复内容:">
+            {{detailsData.replyContent}}
           </FormItem>
-          <FormItem label="请求参数:">
-            {{detailsData.operParam}}
-          </FormItem>
-          <FormItem label="状态">
-            <div style="width:40px;color:white;border-radius:10px;background: green;margin: auto;float:left;text-align: center;" v-if="detailsData.status==0">成功</div>
-            <div style="width:40px;color: white;border-radius:10px;background: red;margin: auto;float:left;text-align: center;" v-else>失败</div>
-          </FormItem>
+          <Form-item v-if="detailsData.status<2" label="回复内容" prop="replyContent">
+            <Input v-model="detailsData.replyContent" type="textarea" :autosize="{minRows: 6,maxRows: 10}"
+              placeholder="请输入"></Input>
+          </Form-item>
         </Form>
-       <!-- <label style="margin-right:10px;">操作模块</label>
-        <label style="margin-right:10px;">登录信息</label>
-        <label style="margin-right:10px;">请求地址</label>
-        <label style="margin-right:10px;">请求方式</label>
-        <label style="margin-right:10px;">操作方法</label>
-        <label style="margin-right:10px;">请求参数</label>
-        <label style="margin-right:10px;">状态</label> -->
       </div>
       <div slot="footer" style="text-align:center">
+        <Button v-if="detailsData.status<2" type="primary" style="width:120px;" @click="reply">回复</Button>
         <Button type="error" style="width:120px;marign-left:10px;" @click="dataDetailsClose">关闭</Button>
       </div>
     </Modal>
@@ -93,16 +82,19 @@
           },
           {
             value: "0",
-            label: "成功"
+            label: "未查看"
           },
           {
             value: "1",
-            label: "失败"
+            label: "已查看"
+          },
+          {
+            value: "4",
+            label: "已回复"
           }
         ],
         form: {
-          title: "",
-          operName: "",
+          createBy: "",
           status: "",
           params: {
             beginTime: "",
@@ -114,6 +106,13 @@
           end:""
         },
         detailsData:{},
+        editRules:{
+          replyContent: [{
+            required: true,
+            message: '回复内容不能为空',
+            trigger: 'blur'
+          }]
+        },
         loading: false,
         data: [],
         rootTableHeight: 400,
@@ -126,51 +125,33 @@
             width: 60,
             align: 'center'
           }, {
-            title: '系统模块',
-            key: 'title',
+            title: '提交人',
+            key: 'createBy',
             align: 'center',
             minWidth: 100
           },
           {
-            title: '操作类型',
-            key: 'operatorType',
+            title: '部门',
+            key: 'detpName',
             align: 'center',
             minWidth: 100
           },
           {
-            title: '操作人员',
-            key: 'operName',
-            align: 'center',
-            minWidth: 100
-          },
-          {
-            title: '部门名称',
-            key: 'deptName',
-            align: 'center',
-            minWidth: 100
-          },
-          {
-            title: '请求ip',
-            key: 'operIp',
-            align: 'center',
-            minWidth: 100
-          },
-          {
-            title: '操作地点',
-            key: 'operLocation',
-            align: 'center',
-            minWidth: 100
-          },
-          {
-            title: '操作状态',
-            key: 'msg',
-            slot: "status",
+            title: '提交时间',
+            key: 'createTime',
             align: 'center',
             minWidth: 120
           },
           {
-            title: '登录时间',
-            key: 'operTime',
+            title: '主题',
+            key: 'title',
+            align: 'center',
+            minWidth: 200
+          },
+          {
+            title: '操作状态',
+            key: 'status',
+            slot: "status",
             align: 'center',
             minWidth: 120
           },
@@ -187,8 +168,8 @@
     methods: {
       query() {
         this.loading = true;
-        let url = "/monitor/operlog/list?pageNum=" + this.logPageNo + "&pageSize=" + this.logPageSize +
-          "&orderByColumn=operTime&isAsc=desc"
+        let url = "/system/feedback/pageList?pageNum=" + this.logPageNo + "&pageSize=" + this.logPageSize +
+          "&orderByColumn=createTime&isAsc=desc"
         this.$ajax.request({
           url: url,
           data: this.form,
@@ -213,6 +194,14 @@
         this.query();
       },
       details(row) {
+        if(row.status==0){
+          let data = {id:row.id,status:1};
+          this.$ajax.request({
+            url:"/system/feedback/changeStatus",
+            data: data,
+            method:"post"
+          })
+        }
         this.detailsData = row;
         this.dataDetailsModal = true;
       },
@@ -225,6 +214,23 @@
       },
       endTimeText(text){
         this.form.params.endTime = text;
+      },
+      reply(){
+        this.$refs.replyForm.validate((valid) => {
+          this.detailsData.status = 2;
+          if (valid) {
+            let url = "/system/feedback/edit";
+            this.$ajax.request({
+              url: url,
+              data: this.detailsData,
+              method: "post"
+            }).then((res) => {
+              this.$Message.success(res.data.msg);
+             this.dataDetailsClose();
+             this.query();
+            })
+          }
+        })
       }
     },
     mounted() {

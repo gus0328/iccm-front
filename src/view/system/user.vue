@@ -260,11 +260,6 @@
             message: '用户姓名不能为空',
             trigger: 'blur'
           }],
-          deptId: [{
-            required: true,
-            message: '请选择部门',
-            trigger: 'blur'
-          }],
           // postIds: [{
           //   required: true,
           //   message: '请选择岗位',

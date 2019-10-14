@@ -83,7 +83,7 @@
   } from '@/libs/util'
   import routers from '@/router/routers'
   import minLogo from '@/assets/images/logo-min.jpg'
-  import maxLogo from '@/assets/images/mylogo.png'
+  import maxLogo from '@/assets/images/logo.png'
   import './main.less'
   import config from '@/config'
   import Cookies from 'js-cookie';

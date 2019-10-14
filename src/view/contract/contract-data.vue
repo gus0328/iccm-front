@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Upload multiple type="drag" action="/upload/test">
+    <Upload @on-success="query" :with-credentials="true" type="drag" :action="uploadPath">
       <div style="padding: 20px 0">
         <Icon type="ios-cloud-upload" size="52" style="color: #3399ff"></Icon>
         <p>Click or drag files here to upload</p>
@@ -17,9 +17,12 @@
 </template>
 
 <script>
+  import config from '@/config'
+  const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
   export default{
     data(){
       return{
+        uploadPath:"/upload/test?resource=PC",
         loading:false,
         columns:[{
             type: 'index',
@@ -69,6 +72,7 @@
         }).then((res) => {
           this.loading = false;
           this.data = res.data.data;
+          this.uploadPath = this.uploadPath+"&token="+res.data.token;
         })
       }
     },

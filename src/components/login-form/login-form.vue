@@ -67,8 +67,8 @@ export default {
   data () {
     return {
       form: {
-        username: 'admin',
-        password: 'admin',
+        username: '10289781',
+        password: 'admin123',
         validateCode:"",
         rememberMe:false
       },

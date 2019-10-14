@@ -162,6 +162,24 @@ export default [{
             component: () => import('@/view/system/log/oper-log')
           }
         ]
+      },
+      {
+        path: '/updateNotice',
+        name: 'updateNotice',
+        meta: {
+          title: 'APP版本',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/system/updateNotice')
+      },
+      {
+        path: '/feedback',
+        name: 'feedback',
+        meta: {
+          title: '意见反馈',
+          icon: 'md-home'
+        },
+        component: () => import('@/view/system/feedback')
       }
     ]
   }

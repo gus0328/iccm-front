@@ -60,7 +60,7 @@
       <h3 slot="header" style="color:#2D8CF0">修改密码</h3>
       <Form ref="editPasswordForm" :model="editPasswordForm" :label-width="100" label-position="right" :rules="passwordValidate">
         <FormItem label="原密码" prop="oldPass" :error="oldPassError"><Input v-model="editPasswordForm.oldPass" placeholder="请输入现在使用的密码" type="password" /></FormItem>
-        <FormItem label="新密码" prop="newPass"><Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，至少6位字符" type="password" /></FormItem>
+        <FormItem label="新密码" prop="newPass"><Input v-model="editPasswordForm.newPass" placeholder="请输入新密码，6~16位字符" type="password" /></FormItem>
         <FormItem label="确认新密码" prop="rePass"><Input v-model="editPasswordForm.rePass" placeholder="请再次输入新密码" type="password" /></FormItem>
       </Form>
       <div slot="footer">
@@ -139,7 +139,7 @@ export default {
         newPass: [
           { required: true, message: '请输入新密码', trigger: 'blur' },
           { min: 6, message: '请至少输入6个字符', trigger: 'blur' },
-          { max: 32, message: '最多输入32个字符', trigger: 'blur' }
+          { max: 16, message: '最多输入16个字符', trigger: 'blur' }
         ],
         rePass: [{ required: true, message: '请再次输入新密码', trigger: 'blur' }, { validator: valideRePassword, trigger: 'blur' }]
       },
