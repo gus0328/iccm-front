@@ -39,10 +39,19 @@ export default [{
       path: '/siteWork',
       name: 'siteWork',
       meta: {
-        title: '现场作业',
+        title: '所有作业',
         icon: 'md-home'
       },
       component: () => import('@/view/work/siteWork')
+    },
+    {
+      path: '/ownSiteWork',
+      name: 'ownSiteWork',
+      meta: {
+        title: '负责作业',
+        icon: 'md-home'
+      },
+      component: () => import('@/view/work/ownSiteWork')
     }]
   }, {
     path: '/contract',

@@ -2,11 +2,8 @@
   <div ref="showContent" style="width:100%;height:100%">
     <div style="width:100%;height:37px;line-height:37px;">
       <Form ref="queryFormRef" inline :model="form">
-        <Form-item prop="itemCode">
-          <label style="margin-right:10px;">设备编号</label><Input v-model="form.itemCode" style="width:200px"></Input>
-        </Form-item>
-        <Form-item prop="itemName">
-          <label style="margin-right:10px;">设备名称</label><Input v-model="form.itemName" style="width:200px"></Input>
+        <Form-item prop="ipAdress">
+          <label style="margin-right:10px;">ip地址</label><Input v-model="form.ipAdress" style="width:200px"></Input>
         </Form-item>
         <Form-item>
           <Button type="primary" @click="query">查询</Button>
@@ -30,14 +27,17 @@
     <Modal v-model="editModal" width="480" :title="editTitle" :mask-closable="false" :closable="false">
       <div style="text-align:center">
         <Form ref="editForm" :model="editForm" :rules="editRules" inline :label-width="70">
-          <Form-item label="设备编号" prop="itemCode">
-            <Input class="form-input" v-model="editForm.itemCode" placeholder="请输入"></Input>
-          </Form-item>
-          <Form-item label="设备名称" prop="itemName">
-            <Input class="form-input" v-model="editForm.itemName" placeholder="请输入"></Input>
-          </Form-item>
           <Form-item label="ip地址" prop="ipAdress">
             <Input class="form-input" v-model="editForm.ipAdress" placeholder="请输入"></Input>
+          </Form-item>
+          <Form-item label="用户名" prop="itemCode">
+            <Input class="form-input" v-model="editForm.itemCode" placeholder="请输入"></Input>
+          </Form-item>
+          <Form-item label="密码" prop="itemName">
+            <Input class="form-input" v-model="editForm.itemName" placeholder="请输入"></Input>
+          </Form-item>
+          <Form-item label="端口号" prop="spareWord1">
+            <Input class="form-input" v-model="editForm.spareWord1" placeholder="请输入"></Input>
           </Form-item>
           <Form-item label="备注" prop="remark">
             <Input class="form-input" v-model="editForm.remark" type="textarea" :autosize="{minRows: 4,maxRows: 10}"
@@ -54,12 +54,11 @@
 </template>
 <script>
   export default {
-    name: 'post',
+    name: 'monitorDevice',
     data() {
       return {
         form: {
-          postName: "",
-          postCode: ""
+          ipAdress: ""
         },
         data: [],
         rootTableHeight: 400,
@@ -74,45 +73,56 @@
           itemCode: "",
           itemName: "",
           ipAdress: "",
-          remark: ""
+          remark: "",
+          spareWord1:""
         },
         editFormCopy: {
           itemCode: "",
           itemName: "",
           ipAdress: "",
-          remark: ""
+          remark: "",
+          spareWord1:""
         },
         editRules: {
           itemName: [{
             required: true,
-            message: '请输入设备名称',
+            message: '请输入密码',
             trigger: 'blur'
           }],
           itemCode: [{
             required: true,
             type: 'string',
-            message: '请输入设备编号',
+            message: '请输入用户名',
             trigger: 'blur'
           }],
           ipAdress: [{
             required: true,
             message: '请输入ip地址',
             trigger: 'blur'
+          }],
+          spareWord1: [{
+            required: true,
+            message: '请输入端口号',
+            trigger: 'blur'
           }]
         },
         columns: [{
-            title: '设备编号',
+            title: 'ip地址',
+            key: 'ipAdress',
+            align: 'center'
+          },{
+            title: '用户名',
             key: 'itemCode',
             align: 'center'
           },
           {
-            title: '设备名称',
+            title: '密码',
             key: 'itemName',
             align: 'center'
           },
           {
-            title: 'ip地址',
-            key: 'ipAdress',
+            title: '端口号',
+            key: 'spareWord1',
             align: 'center'
           },
           {

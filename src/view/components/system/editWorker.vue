@@ -42,15 +42,15 @@
         </Table>
       </div>
       <div slot="footer" style="text-align:center">
-        <Button type="primary" style="width:80px;" @click="editSave">保存</Button>
-        <Button type="error" style="width:80px;" @click="editWdClose">取消</Button>
+        <Button type="primary" style="width:80px;" @click="editSave">确定</Button>
+<!--        <Button type="error" style="width:80px;" @click="editWdClose">取消</Button> -->
       </div>
     </Modal>
-    <Modal :z-index="100000" v-model="chooseDeviceModal" width="600" :transfer="true" title="选择穿戴设备" :footer-hide="true" :mask-closable="false">
+    <Modal :z-index="100000" v-model="chooseDeviceModal" width="600" :transfer="true" title="选择穿戴设备" :footer-hide="true" :mask-closable="false" :closable="false">
     	<chooseWearDevice ref="chooseWearDeviceRef" v-on:save="chooseSave" v-on:quit="chooseQuit"></chooseWearDevice>
     </Modal>
-    <Button style="width:70px;margin-left:300px;margin-top:15px;" type="primary" @click="save">确定</Button>
-    <Button style="margin-left:20px;width:70px;margin-top:15px;" @click="quit" type="error">退出</Button>
+    <Button style="width:70px;margin-left:350px;margin-top:15px;" type="primary" @click="save">确定</Button>
+<!--    <Button style="margin-left:20px;width:70px;margin-top:15px;" @click="quit" type="error">退出</Button> -->
   </div>
 </template>
 <script>
@@ -102,19 +102,6 @@
           personName: [{
             required: true,
             message: '请输入姓名',
-            trigger: 'blur'
-          }],
-          mobileNum: [{
-            required: true,
-            message: '请输入手机号',
-            trigger: 'blur'
-          }, {
-            validator: this.$validatePhone,
-            trigger: 'blur'
-          }],
-          wearDeviceId:[{
-            required: true,
-            message: '请选择穿戴设备',
             trigger: 'blur'
           }]
         },
@@ -178,6 +165,7 @@
       add(row) {
         this.editTitle = "新增";
         this.editForm = Object.assign({}, this.editFormCopy);
+        this.editForm.devices = [];
         this.editModal = true;
       },
       editSave() {
@@ -203,11 +191,7 @@
         this.editForm = Object.assign({},this.editFormCopy);
       },
       save(){
-      	if(this.data.length<1){
-      		this.$Message.warning("请至少添加一个作业人员");
-      	}else{
-      		this.$emit("save",this.data)
-      	}
+      	this.$emit("save",this.data)
       },
       quit(){
       	this.$emit("quit");
@@ -218,6 +202,7 @@
       },
       chooseOpen(){
         this.$refs.chooseWearDeviceRef.init();
+        this.$refs.chooseWearDeviceRef.initData(this.editForm.devices);
         this.chooseDeviceModal = true;
       },
       chooseQuit(){

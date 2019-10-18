@@ -2,12 +2,9 @@
 	<div>
 		<div style="width:100%;height:37px;line-height:37px;">
 			<Form ref="queryForm" :model="queryForm" inline>
-				<Form-item prop="itemCode">
-				  <label style="margin-right:10px;">设备编号</label><Input v-model="queryForm.itemCode" style="width:100px"></Input>
+				<Form-item prop="ipAdress">
+				  <label style="margin-right:10px;">ip地址</label><Input v-model="queryForm.ipAdress" style="width:100px"></Input>
 				</Form-item>
-        <Form-item prop="itemName">
-          <label style="margin-right:10px;">设备名称</label><Input v-model="queryForm.itemName" style="width:100px"></Input>
-        </Form-item>
         <Form-item>
           <Button type="primary" @click="query">查询</Button>
         </Form-item>
@@ -16,26 +13,31 @@
         </Form-item>
 			</Form>
 		</div>
-		<Table ref="userTable" :loading="loading" :columns="columns1" :data="data1" :height="400" :highlight-row="true"
-    @on-select="updateSelectRows" @on-select-cancel="updateSelectRows" @on-select-all="updateSelectRows"
-    @on-selection-change="updateSelectRows">
+		<Table ref="chooseTable" :loading="loading" :columns="columns1" :data="data1" :height="250">
+      <template slot-scope="{ row, index }" slot="action">
+        <Button :disabled="initButton(row.ipAdress)" size="small" type="primary" @click="addRow(row)">+</Button>
+      </template>
 		</Table>
-		<Button style="width:70px;margin-left:220px;margin-top:15px;" type="primary" @click="save">确定</Button>
-		<Button style="margin-left:20px;width:70px;margin-top:15px;" @click="quit" type="error">退出</Button>
+    <Table ref="choosedTable" :columns="columns1" :data="data2" :height="250">
+      <template slot-scope="{ row, index }" slot="action">
+        <Button size="small" type="error" @click="delRow(index,row.ipAdress)">-</Button>
+      </template>
+    </Table>
+		<Button style="width:70px;margin-left:350px;margin-top:15px;" type="primary" @click="save">确定</Button>
+<!-- 		<Button style="margin-left:20px;width:70px;margin-top:15px;" @click="quit" type="error">退出</Button> -->
 	</div>
 </template>
 <script>
 	export default {
-		name: 'downFile',
+		name: 'chooseMonitor',
 		data() {
 			return {
+        chooseItem:"",
 				loading: false,
 				data1: [],
-        selectRows:[],
-				selectRow:{},
+        data2: [],
 				queryForm:{
-					itemCode:"",
-          itemName:""
+					ipAdress:""
 				},
 				columns1: [
           {
@@ -44,32 +46,35 @@
             align:"center"
           },
           {
-            type:"selection",
-            width:60,
-            align: 'center'
-          },
-          {
-            title: '设备编号',
-            key: 'itemCode',
-            align: 'center',
-            minWidth: 100
-          },
-          {
-            title: '设备名称',
-            key: 'itemName',
+            title: 'ip地址',
+            key: 'ipAdress',
             align: 'center',
             minWidth: 120
           },
           {
-            title: 'ip地址',
-            key: 'ipAdress',
+            title: '备注',
+            key: 'remark',
             align: 'center',
+            minWidth: 120
+          },
+          {
+            title: '操作',
+            key: 'action',
+            align: 'center',
+            slot:"action",
             minWidth: 120
           }
 				]
 			}
 		},
 		methods: {
+      initData(data){
+        this.chooseItem = "";
+        for(let int = 0 ;int < data.length;int++){
+          this.chooseItem+=data[int].ipAdress+",";
+        }
+        this.data2 = data;
+      },
 			init() {
 				this.query();
 			},
@@ -85,11 +90,7 @@
         })
 			},
 			save(){
-        if(this.selectRows.length<1){
-          this.$Message.warning("请至少选择一条数据");
-        }else{
-          this.$emit("save",this.selectRows)
-        }
+        this.$emit("save",this.data2)
 			},
 			quit(){
 				this.$emit("quit");
@@ -97,8 +98,23 @@
       resetQueryForm() {
         this.$refs.queryForm.resetFields();
       },
-      updateSelectRows(data) {
-      	this.selectRows = data;
+      addRow(row){
+        if(this.chooseItem.indexOf(row.ipAdress+",")==-1){
+          this.data2.push(JSON.parse(JSON.stringify(row)));
+          this.chooseItem+=row.ipAdress+","
+        }else{
+          this.$Message.warning("此设备已选择");
+        }
+      },
+      delRow(index,ipAdress){
+        this.data2.splice(index,1);
+        this.chooseItem = this.chooseItem.replace(ipAdress+",","");
+      },
+      initButton(ipAdress){
+        if(this.chooseItem.indexOf(ipAdress+",")==-1){
+          return false;
+        }
+        return true;
       }
 		},
 		mounted(){

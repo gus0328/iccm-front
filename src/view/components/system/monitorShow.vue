@@ -19,20 +19,14 @@
             align:"center"
           },
           {
-            title: '设备编号',
+            title: 'ip地址',
             key: 'itemCode',
             align: 'center',
             minWidth: 100
           },
           {
-            title: '设备名称',
-            key: 'itemName',
-            align: 'center',
-            minWidth: 120
-          },
-          {
-            title: 'ip地址',
-            key: 'ipAdress',
+            title: '备注',
+            key: 'remark',
             align: 'center',
             minWidth: 120
           }

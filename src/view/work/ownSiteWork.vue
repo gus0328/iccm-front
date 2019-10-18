@@ -2,10 +2,6 @@
   <div ref="showContent" style="width:100%;height:100%">
     <div style="width:100%;height:37px;line-height:37px;">
       <Form ref="queryFormRef" inline :model="form">
-        <Form-item prop="leadUserName">
-          <label style="margin-right:10px;">负责人</label>
-          <Input v-model="form.leadUserName" style="width:100px" />
-        </Form-item>
         <Form-item prop="status">
           <label style="margin-right:10px;">状态</label>
           <Select class="form-input" v-model="form.workStatus" style="width:100px !important">
@@ -57,10 +53,6 @@
       <div style="text-align:center">
         <Form ref="editForm" :model="editForm" :rules="editRules" inline :label-width="70">
           <Form ref="siteWork" :model="editForm.siteWork" :rules="editRules" inline :label-width="70">
-            <Form-item label="负责人" prop="leadUserName">
-              <Input v-model="editForm.siteWork.leadUserName" :disabled="rowWorkStatus>0&&editTitle=='修改'" readonly placeholder="点击选择负责人" style="width:120px;margin-right:20px;" />
-              <Button :disabled="rowWorkStatus>0&&editTitle=='修改'" icon="ios-search" type="info" @click="chooseUserOpen" style="width:60px;"></Button>
-            </Form-item>
             <Form-item label="作业地点" prop="workSite"><Input :disabled="rowWorkStatus>0&&editTitle=='修改'" class="form-input" v-model="editForm.siteWork.workSite" placeholder="请输入" /></Form-item>
           </Form>
           <Form-item label="开始时间" prop="startTimeTp">
@@ -127,9 +119,6 @@
         <Button type="error" style="width:80px;" @click="editWdClose">取消</Button>
       </div>
     </Modal>
-    <Modal v-model="chooseUserModal" width="635" :transfer="false" title="选择用户" :footer-hide="true" :mask-closable="false" :closable="false">
-      <chooseUser ref="chooseUserRef" v-on:save="chooseSave" v-on:quit="chooseQuit"></chooseUser>
-    </Modal>
     <Modal v-model="editWorkerModal" width="800" :transfer="false" title="作业人员" :footer-hide="true" :mask-closable="false" :closable="false">
       <worker ref="editWorkerRef" v-on:save="workerSave" v-on:quit="workerQuit"></worker>
     </Modal>
@@ -151,7 +140,6 @@
   </div>
 </template>
 <script>
-import chooseUser from '../components/system/chooseUser.vue';
 import worker from '../components/system/editWorker.vue';
 import chooseGasDevice from '../components/system/chooseGasDevice.vue';
 import chooseMonitorDevice from '../components/system/chooseMonitorDevice.vue';
@@ -159,9 +147,8 @@ import workerShow from '../components/system/workerShow';
 import gasShow from '../components/system/gasShow';
 import monitorShow from '../components/system/monitorShow'
 export default {
-  name: 'sitWork',
+  name: 'ownSitWork',
   components: {
-    chooseUser,
     worker,
     chooseGasDevice,
     chooseMonitorDevice,
@@ -193,14 +180,12 @@ export default {
         }
       ],
       editWorkerModal: false,
-      chooseUserModal: false,
       editGasDeviceModal: false,
       editMonitorDeviceModal: false,
       workerShowModal:false,
       gasShowModal:false,
       monitorShowModal:false,
       form: {
-        leadUserName: '',
         workSite: '',
         workStatus: '',
         begin:beginTime,
@@ -221,8 +206,6 @@ export default {
       editTitle: '新增',
       editForm: {
         siteWork: {
-          leadUserId: '',
-          leadUserName: '',
           workSite: '',
           startTime: '',
           workStatus: '0'
@@ -234,8 +217,6 @@ export default {
       },
       editFormCopy: {
         siteWork: {
-          leadUserId: '',
-          leadUserName: '',
           workSite: '',
           startTime: '',
           workStatus: '0'
@@ -246,13 +227,6 @@ export default {
         startTimeTp: new Date()
       },
       editRules: {
-        leadUserName: [
-          {
-            required: true,
-            message: '请选择负责人',
-            trigger: 'blur'
-          }
-        ],
         workSite: [
           {
             required: true,
@@ -325,7 +299,7 @@ export default {
   methods: {
     queryworks() {
       this.loading = true;
-      let url = '/work/siteWork/pageList?pageNum=' + this.workPageNo + '&pageSize=' + this.workPageSize + '&orderByColumn=id&isAsc=desc';
+      let url = '/work/siteWork/ownPageList?pageNum=' + this.workPageNo + '&pageSize=' + this.workPageSize + '&orderByColumn=id&isAsc=desc';
       this.$ajax
         .request({
           url: url,
@@ -340,7 +314,6 @@ export default {
     },
     resetQueryForm() {
       this.form = {
-        leadUserName: '',
         workSite: '',
         workStatus: '',
         begin: '',
@@ -400,8 +373,6 @@ export default {
       this.editTitle = '新增';
       this.editForm = {
         siteWork: {
-          leadUserId: '',
-          leadUserName: '',
           workSite: '',
           startTime: '',
           workStatus: '0'
@@ -437,7 +408,7 @@ export default {
               this.editForm.siteWork.startTime = this.editForm.startTimeTp.Format("yyyy-MM-dd HH:mm:ss");
               let url = '/work/siteWork/edit';
               if (this.editTitle == '新增') {
-                url = '/work/siteWork/add';
+                url = '/work/siteWork/ownAdd';
               }
               this.$ajax
                 .request({
@@ -458,8 +429,6 @@ export default {
     editWdClose() {
       this.editForm = {
         siteWork: {
-          leadUserId: '',
-          leadUserName: '',
           workSite: '',
           startTime: '',
           workStatus: '0'
@@ -480,17 +449,6 @@ export default {
     },
     endTimeText(text) {
       this.form.params.endTime = text;
-    },
-    chooseUserOpen() {
-      this.chooseUserModal = true;
-    },
-    chooseQuit() {
-      this.chooseUserModal = false;
-    },
-    chooseSave(row) {
-      this.editForm.siteWork.leadUserId = row.userId;
-      this.editForm.siteWork.leadUserName = row.userName;
-      this.chooseUserModal = false;
     },
     workerOpen() {
       this.editWorkerModal = true;

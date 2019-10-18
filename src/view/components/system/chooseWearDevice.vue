@@ -16,12 +16,17 @@
         </Form-item>
 			</Form>
 		</div>
-		<Table ref="userTable" :loading="loading" :columns="columns1" :data="data1" :height="400" :highlight-row="true"
-    @on-select="updateSelectRows" @on-select-cancel="updateSelectRows" @on-select-all="updateSelectRows"
-    @on-selection-change="updateSelectRows">
+		<Table ref="chooseTable" :loading="loading" :columns="columns1" :data="data1" :height="250" :highlight-row="true">
+      <template slot-scope="{ row, index }" slot="action">
+        <Button :disabled="initButton(row.itemCode)" size="small" type="primary" @click="addRow(row)">+</Button>
+      </template>
 		</Table>
-		<Button style="width:70px;margin-left:220px;margin-top:15px;" type="primary" @click="save">确定</Button>
-		<Button style="margin-left:20px;width:70px;margin-top:15px;" @click="quit" type="error">退出</Button>
+    <Table ref="choosedTable" :columns="columns2" :data="data2" :height="250">
+      <template slot-scope="{row,index}" slot="action">
+        <Button size="small" type="error" @click="delRow(index,row.itemCode)">-</Button>
+      </template>
+    </Table>
+		<Button style="width:70px;margin-left:250px;margin-top:15px;" type="primary" @click="save">确定</Button>
 	</div>
 </template>
 <script>
@@ -29,8 +34,10 @@
 		name: 'downFile',
 		data() {
 			return {
+        chooseItem:"",
 				loading: false,
 				data1: [],
+        data2:[],
         selectRows:[],
 				selectRow:{},
 				queryForm:{
@@ -44,9 +51,30 @@
             align:"center"
           },
           {
-            type:"selection",
+            title: '设备编号',
+            key: 'itemCode',
+            align: 'center',
+            minWidth: 100
+          },
+          {
+            title: '设备名称',
+            key: 'itemName',
+            align: 'center',
+            minWidth: 120
+          },
+          {
+            title: '操作',
+            key: 'action',
+            align: 'center',
+            slot:"action",
+            minWidth: 60
+          }
+				],
+        columns2: [
+          {
+            type:"index",
             width:60,
-            align: 'center'
+            align:"center"
           },
           {
             title: '设备编号',
@@ -59,11 +87,25 @@
             key: 'itemName',
             align: 'center',
             minWidth: 120
+          },
+          {
+            title: '操作',
+            key: 'action',
+            align: 'center',
+            slot:"action",
+            minWidth: 80
           }
-				]
+        ]
 			}
 		},
 		methods: {
+      initData(data){
+        this.chooseItem = "";
+        for(let int = 0 ;int < data.length;int++){
+          this.chooseItem+=data[int].itemCode+",";
+        }
+        this.data2 = data;
+      },
 			init() {
 				this.query();
 			},
@@ -79,20 +121,28 @@
         })
 			},
 			save(){
-        if(this.selectRows.length<1){
-          this.$Message.warning("请至少选择一条数据");
-        }else{
-          this.$emit("save",this.selectRows)
-        }
-			},
-			quit(){
-				this.$emit("quit");
+        this.$emit("quit");
 			},
       resetQueryForm() {
         this.$refs.queryForm.resetFields();
       },
-      updateSelectRows(data) {
-      	this.selectRows = data;
+      addRow(row){
+        if(this.chooseItem.indexOf(row.itemCode+",")==-1){
+          this.data2.push(JSON.parse(JSON.stringify(row)));
+          this.chooseItem+=row.itemCode+","
+        }else{
+          this.$Message.warning("此设备已选择");
+        }
+      },
+      delRow(index,itemCode){
+        this.data2.splice(index,1);
+        this.chooseItem = this.chooseItem.replace(itemCode+",","");
+      },
+      initButton(itemCode){
+        if(this.chooseItem.indexOf(itemCode+",")==-1){
+          return false;
+        }
+        return true;
       }
 		},
 		mounted(){
