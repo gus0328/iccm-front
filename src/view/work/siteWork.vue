@@ -29,6 +29,7 @@
     <Button style="margin:5px 0;" type="info" @click="add">新增</Button>
     <Table class="content-table" :loading="loading" :columns="columns" :data="data" :height="rootTableHeight">
       <template slot-scope="{ row, index }" slot="action">
+        <Button size="small" type="info" :disabled="row.workStatus!=1" style="margin-right:10px;" @click="showWorkData">作业监控</Button>
         <Button style="margin-right:10px;" size="small" type="primary" @click="edit(row)">编辑</Button>
         <Button size="small" type="error" @click="del(row)">删除</Button>
       </template>
@@ -148,6 +149,9 @@
     <Modal v-model="monitorShowModal" width="800" :transfer="false" title="视屏监控设备" :footer-hide="true" :mask-closable="false" :closable="false">
       <monitorShow ref="monitorShowModalRef" v-on:quit="monitorShowQuit"></monitorShow>
     </Modal>
+    <Modal v-model="workDataModal" fullscreen width="100%" height="100%" :transfer="false" title="现场作业数据" :footer-hide="true" :mask-closable="false">
+      <workData></workData>
+    </Modal>
   </div>
 </template>
 <script>
@@ -158,6 +162,7 @@ import chooseMonitorDevice from '../components/system/chooseMonitorDevice.vue';
 import workerShow from '../components/system/workerShow';
 import gasShow from '../components/system/gasShow';
 import monitorShow from '../components/system/monitorShow'
+import workData from '../components/system/workData.vue'
 export default {
   name: 'sitWork',
   components: {
@@ -167,7 +172,8 @@ export default {
     chooseMonitorDevice,
     workerShow,
     gasShow,
-    monitorShow
+    monitorShow,
+    workData
   },
   data() {
     const beginTime = this.$dateUtils.getTodayStartTime();
@@ -192,6 +198,7 @@ export default {
           label: '完成作业'
         }
       ],
+      workDataModal:false,
       editWorkerModal: false,
       chooseUserModal: false,
       editGasDeviceModal: false,
@@ -315,7 +322,7 @@ export default {
         {
           title: '操作',
           key: 'control',
-          width: 180,
+          width: 220,
           align: 'center',
           slot: 'action'
         }
@@ -547,6 +554,9 @@ export default {
     },
     monitorShowQuit(){
       this.monitorShowModal = false;
+    },
+    showWorkData(){
+      this.workDataModal = true;
     }
   },
   mounted() {

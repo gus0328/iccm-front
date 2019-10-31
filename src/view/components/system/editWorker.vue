@@ -27,7 +27,7 @@
        </span>
       </template>
     </Table>
-    <Modal v-model="editModal" width="480" :title="editTitle" :mask-closable="false" :closable="false">
+    <Modal v-model="editModal" width="580" :title="editTitle" :mask-closable="false" :closable="false">
       <div style="text-align:center">
         <Form ref="editForm" :model="editForm" :rules="editRules" inline :label-width="70">
           <Form-item label="作业人员" prop="personName">
@@ -39,6 +39,9 @@
         </Form>
         <Button icon="md-add" type="info" @click="chooseOpen">选择穿戴设备</Button>
         <Table ref="wearTable" :columns="deviceColumns" :data="editForm.devices">
+          <template slot-scope="{row}" slot="type">
+            {{typeList[row.spareWord1].label}}
+          </template>
         </Table>
       </div>
       <div slot="footer" style="text-align:center">
@@ -46,7 +49,7 @@
 <!--        <Button type="error" style="width:80px;" @click="editWdClose">取消</Button> -->
       </div>
     </Modal>
-    <Modal :z-index="100000" v-model="chooseDeviceModal" width="600" :transfer="true" title="选择穿戴设备" :footer-hide="true" :mask-closable="false" :closable="false">
+    <Modal :z-index="100000" v-model="chooseDeviceModal" width="800" :transfer="true" title="选择穿戴设备" :footer-hide="true" :mask-closable="false" :closable="false">
     	<chooseWearDevice ref="chooseWearDeviceRef" v-on:save="chooseSave" v-on:quit="chooseQuit"></chooseWearDevice>
     </Modal>
     <Button style="width:70px;margin-left:350px;margin-top:15px;" type="primary" @click="save">确定</Button>
@@ -62,6 +65,19 @@
     },
     data() {
       return {
+        typeList:[{
+          value:"0",
+          label:"高压"
+        },{
+          value:"1",
+          label:"低压"
+        },{
+          value:"2",
+          label:"心率"
+        },{
+          value:"3",
+          label:"皮肤温度"
+        }],
         deviceColumns:[
           {
             type:"index",
@@ -79,6 +95,13 @@
             key: 'itemName',
             align: 'center',
             minWidth: 120
+          },
+          {
+            title: '设备类型',
+            key: 'spareWord1',
+            align: 'center',
+            minWidth: 120,
+            slot:"type"
           }
 				],
         currentIndex:-1,

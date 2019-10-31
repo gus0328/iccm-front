@@ -35,7 +35,7 @@
         {{typeList[row.spareWord1].label}}
       </template>
       <template slot-scope="{row,index}" slot="action">
-        <Button size="small" type="error" @click="delRow(index,row.itemCode)">-</Button>
+        <Button size="small" type="error" @click="delRow(index,row.itemCode,row.spareWord1)">-</Button>
       </template>
     </Table>
 		<Button style="width:70px;margin-left:350px;margin-top:15px;" type="primary" @click="save">确定</Button>
@@ -48,6 +48,7 @@
 		data() {
 			return {
         chooseItem:"",
+        chooseType:"",
         typeList:[{
           value:"0",
           label:"氧气监测设备"
@@ -155,8 +156,10 @@
 		methods: {
       initData(data){
         this.chooseItem = "";
+        this.chooseType = "";
         for(let int = 0 ;int < data.length;int++){
           this.chooseItem+=data[int].itemCode+",";
+          this.chooseType+=data[int].spareWord1+","
         }
         this.data2 = data;
       },
@@ -178,16 +181,22 @@
         this.$emit("save",this.data2)
 			},
       addRow(row){
+        if(this.chooseType.indexOf(row.spareWord1+",")!=-1){
+          this.$Message.warning("此类型设备已选择");
+          return;
+        }
         if(this.chooseItem.indexOf(row.itemCode+",")==-1){
           this.data2.push(JSON.parse(JSON.stringify(row)));
           this.chooseItem+=row.itemCode+","
+          this.chooseType+=row.spareWord1+","
         }else{
           this.$Message.warning("此设备已选择");
         }
       },
-      delRow(index,itemCode){
+      delRow(index,itemCode,spareWord1){
         this.data2.splice(index,1);
         this.chooseItem = this.chooseItem.replace(itemCode+",","");
+        this.chooseType = this.chooseType.replace(spareWord1+",","");
       },
 			quit(){
 				this.$emit("quit");

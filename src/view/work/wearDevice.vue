@@ -8,6 +8,12 @@
         <Form-item prop="itemName">
           <label style="margin-right:10px;">设备名称</label><Input v-model="form.itemName" style="width:200px"></Input>
         </Form-item>
+        <Form-item prop="spareWord1">
+          <label style="margin-right:10px;">设备类型</label>
+          <Select class="form-input" v-model="form.spareWord1" style="width:140px !important">
+            <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+          </Select>
+        </Form-item>
         <Form-item>
           <Button type="primary" @click="query">查询</Button>
         </Form-item>
@@ -22,6 +28,9 @@
         <Button style="margin-right:10px;" size="small" type="primary" @click="edit(row)">编辑</Button>
         <Button size="small" type="error" @click="del(row)">删除</Button>
       </template>
+      <template slot-scope="{row}" slot="type">
+        {{typeList[row.spareWord1].label}}
+      </template>
     </Table>
     <template>
       <Page ref="dictPage" :total="deviceCount" :current="devicePageNo" :page-size="devicePageSize" :page-size-opts="devicePageSizeOpt"
@@ -35,6 +44,11 @@
           </Form-item>
           <Form-item label="设备名称" prop="itemName">
             <Input class="form-input" v-model="editForm.itemName" placeholder="请输入"></Input>
+          </Form-item>
+          <Form-item label="设备类型" prop="spareWord1">
+            <Select v-model="editForm.spareWord1" style="width:200px">
+                    <Option v-for="item in typeList" :value="item.value" :key="item.value">{{ item.label }}</Option>
+                </Select>
           </Form-item>
           <Form-item label="用途" prop="purpose">
             <Input class="form-input" v-model="editForm.purpose" type="textarea" :autosize="{minRows: 4,maxRows: 10}"
@@ -58,9 +72,23 @@
     name: 'post',
     data() {
       return {
+        typeList:[{
+          value:"0",
+          label:"高压"
+        },{
+          value:"1",
+          label:"低压"
+        },{
+          value:"2",
+          label:"心率"
+        },{
+          value:"3",
+          label:"皮肤温度"
+        }],
         form: {
           postName: "",
-          postCode: ""
+          postCode: "",
+          spareWord1:""
         },
         data: [],
         rootTableHeight: 400,
@@ -75,13 +103,15 @@
           itemCode: "",
           itemName: "",
           purpose: "",
-          remark: ""
+          remark: "",
+          spareWord1:""
         },
         editFormCopy: {
           itemCode: "",
           itemName: "",
           purpose: "",
-          remark: ""
+          remark: "",
+          spareWord1:""
         },
         editRules: {
           itemName: [{
@@ -95,6 +125,12 @@
             message: '请输入设备编号',
             trigger: 'blur'
           }],
+          spareWord1:[{
+            required: true,
+            type: 'string',
+            message: '请选择类型',
+            trigger: 'blur'
+          }]
         },
         columns: [{
             title: '设备编号',
@@ -105,6 +141,12 @@
             title: '设备名称',
             key: 'itemName',
             align: 'center'
+          },
+          {
+            title: '设备类型',
+            key: 'spareWord1',
+            align: 'center',
+            slot: "type"
           },
           {
             title: '用途',
