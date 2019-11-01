@@ -127,6 +127,7 @@
         <Button :disabled="rowWorkStatus>2&&editTitle=='修改'" type="primary" style="width:80px;" @click="editSave">保存</Button>
         <Button type="error" style="width:80px;" @click="editWdClose">取消</Button>
       </div>
+      <Spin size="large" fix v-if="editSaveSpin"></Spin>
     </Modal>
     <Modal v-model="chooseUserModal" width="635" :transfer="false" title="选择用户" :footer-hide="true" :mask-closable="false" :closable="false">
       <chooseUser ref="chooseUserRef" v-on:save="chooseSave" v-on:quit="chooseQuit"></chooseUser>
@@ -179,6 +180,7 @@ export default {
     const beginTime = this.$dateUtils.getTodayStartTime();
     const endTime = this.$dateUtils.getTodayEndTime();
     return {
+      editSaveSpin:false,
       rowWorkStatus:-1,
       statusList: [
         {
@@ -446,6 +448,7 @@ export default {
               if (this.editTitle == '新增') {
                 url = '/work/siteWork/add';
               }
+              this.editSaveSpin = true;
               this.$ajax
                 .request({
                   url: url,
@@ -453,6 +456,7 @@ export default {
                   method: 'post'
                 })
                 .then(res => {
+                  this.editSaveSpin = false;
                   this.$Message.success(res.data.msg);
                   this.editWdClose();
                   this.queryworks();
