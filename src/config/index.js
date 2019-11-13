@@ -18,11 +18,11 @@ export default {
    */
   baseUrl: {
     dev: '',
-    pro: 'http://localhost:8090'
+    pro: 'http://192.168.120.67:8090'
   },
   wbUrl:{
-	dev:'ws://localhost:8090',
-	pro:'ws://localhost:8090'
+	dev:'ws://192.168.120.67:8090',
+	pro:'ws://192.168.120.67:8090'
   },
   /**
    * @description 默认打开的首页的路由name值，默认为home

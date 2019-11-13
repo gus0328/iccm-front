@@ -29,7 +29,7 @@
     <Button style="margin:5px 0;" type="info" @click="add">新增</Button>
     <Table class="content-table" :loading="loading" :columns="columns" :data="data" :height="rootTableHeight">
       <template slot-scope="{ row, index }" slot="action">
-        <Button size="small" type="info" :disabled="row.workStatus!=1" style="margin-right:10px;" @click="showWorkData">作业监控</Button>
+        <Button size="small" type="info" :disabled="row.workStatus!=1" style="margin-right:10px;" @click="showWorkData(row.id)">作业监控</Button>
         <Button style="margin-right:10px;" size="small" type="primary" @click="edit(row)">编辑</Button>
         <Button size="small" type="error" @click="del(row)">删除</Button>
       </template>
@@ -54,35 +54,64 @@
         show-total
       />
     </template>
-    <Modal v-model="editModal" width="480" :title="editTitle" :mask-closable="false" :closable="false">
-      <div style="text-align:center">
-        <Form ref="editForm" :model="editForm" :rules="editRules" inline :label-width="70">
-          <Form ref="siteWork" :model="editForm.siteWork" :rules="editRules" inline :label-width="70">
-            <Form-item label="负责人" prop="leadUserName">
-              <Input v-model="editForm.siteWork.leadUserName" :disabled="rowWorkStatus>0&&editTitle=='修改'" readonly placeholder="点击选择负责人" style="width:120px;margin-right:20px;" />
-              <Button :disabled="rowWorkStatus>0&&editTitle=='修改'" icon="ios-search" type="info" @click="chooseUserOpen" style="width:60px;"></Button>
-            </Form-item>
-            <Form-item label="作业地点" prop="workSite"><Input :disabled="rowWorkStatus>0&&editTitle=='修改'" class="form-input" v-model="editForm.siteWork.workSite" placeholder="请输入" /></Form-item>
-          </Form>
-          <Form-item label="开始时间" prop="startTimeTp">
-            <DatePicker :disabled="rowWorkStatus>0&&editTitle=='修改'"
-              v-model="editForm.startTimeTp"
-              format="yyyy-MM-dd HH:mm:ss"
-              type="datetime"
-              :editable="false"
-              placeholder="选择日期"
-              style="width: 200px"
-            ></DatePicker>
-          </Form-item>
-          <Form-item label="状态">
-            <RadioGroup v-model="editForm.siteWork.workStatus">
-              <Radio label="0" :disabled="rowWorkStatus>0&&editTitle=='修改'">未开始</Radio>
-              <Radio label="1" :disabled="rowWorkStatus>2&&editTitle=='修改'">正在作业</Radio>
-              <Radio label="2" :disabled="rowWorkStatus>2&&editTitle=='修改'">暂停作业</Radio>
-              <Radio label="3">完成作业</Radio>
-            </RadioGroup>
-          </Form-item>
-          <Form-item>
+    <Modal v-model="editModal" width="1000" :title="editTitle" :mask-closable="false" :closable="false">
+      <div style="text-align:center;">
+        <Row :gutter="16">
+          <Col span="8">
+            <Form ref="editForm" :model="editForm" :rules="editRules" inline :label-width="70" style="float:left">
+              <Form ref="siteWork" :model="editForm.siteWork" :rules="editRules" inline :label-width="70">
+                <Form-item label="负责人" prop="leadUserName">
+                  <Input v-model="editForm.siteWork.leadUserName" :disabled="rowWorkStatus>0&&editTitle=='修改'" readonly placeholder="点击选择负责人" style="width:120px;margin-right:20px;" />
+                  <Button :disabled="rowWorkStatus>0&&editTitle=='修改'" icon="ios-search" type="info" @click="chooseUserOpen" style="width:60px;"></Button>
+                </Form-item>
+                <Form-item label="作业地点" prop="workSite"><Input :disabled="rowWorkStatus>0&&editTitle=='修改'" class="form-input" v-model="editForm.siteWork.workSite" placeholder="请输入" /></Form-item>
+              </Form>
+              <Form-item label="开始时间" prop="startTimeTp">
+                <DatePicker :disabled="rowWorkStatus>0&&editTitle=='修改'"
+                  v-model="editForm.startTimeTp"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  type="datetime"
+                  :editable="false"
+                  placeholder="选择日期"
+                  style="width: 200px"
+                ></DatePicker>
+              </Form-item>
+              <Form-item label="状态">
+                <RadioGroup v-model="editForm.siteWork.workStatus">
+                  <Radio label="0" :disabled="rowWorkStatus>0&&editTitle=='修改'">未开始</Radio>
+                  <Radio label="1" :disabled="rowWorkStatus>2&&editTitle=='修改'">正在作业</Radio>
+                  <Radio label="2" :disabled="rowWorkStatus>2&&editTitle=='修改'">暂停作业</Radio>
+                  <Radio label="3">完成作业</Radio>
+                </RadioGroup>
+              </Form-item>
+            </Form>
+          </Col>
+          <Col span="5">
+           <span style="margin-right:10px;">作业人员</span>
+            <Button v-if="rowWorkStatus<3" icon="md-add" type="info" @click="workerOpen"></Button>
+            <Button v-if="rowWorkStatus>2&&editTitle=='修改'" icon="md-list-box" type="success" @click="workerShowOpen"></Button>
+            <List size="small">
+                <ListItem v-for="(item, index) in editForm.workers" :key="index">{{item.personName}}</ListItem>
+            </List>
+          </Col>
+          <Col span="6">
+            <label style="margin-right:10px;">气体采集</label>
+            <Button v-if="rowWorkStatus<3" icon="md-add" type="info" @click="gasDeviceOpen"></Button>
+            <Button v-if="rowWorkStatus>2&&editTitle=='修改'" icon="md-list-box" type="success" @click="gasShowOpen"></Button>
+            <List size="small">
+                <ListItem v-for="(item, index) in editForm.gases" :key="index">{{item.itemCode}}</ListItem>
+            </List>
+          </Col>
+          <Col span="5">
+            <label style="margin-right:10px;">视屏监控</label>
+            <Button v-if="rowWorkStatus<3" icon="md-add" type="info" @click="monitorDeviceOpen"></Button>
+            <Button v-if="rowWorkStatus>2&&editTitle=='修改'" icon="md-list-box" type="success" @click="monitorShowOpen"></Button>
+            <List size="small">
+                <ListItem v-for="(item, index) in editForm.monitors" :key="index">{{ item.ipAdress }}</ListItem>
+            </List>
+          </Col>
+        </Row>
+          <!-- <Form-item>
             <label style="margin-right:10px;">作业人员</label>
             <Button v-if="rowWorkStatus<3" style="margin-right:220px;" icon="md-add" type="info" @click="workerOpen"></Button>
             <Button v-if="rowWorkStatus>2&&editTitle=='修改'" style="margin-right:220px;" icon="md-list-box" type="success" @click="workerShowOpen"></Button>
@@ -120,8 +149,7 @@
               <span v-else>{{ item.ipAdress }}，</span>
             </span>
             】
-          </Form-item>
-        </Form>
+          </Form-item> -->
       </div>
       <div slot="footer" style="text-align:center">
         <Button :disabled="rowWorkStatus>2&&editTitle=='修改'" type="primary" style="width:80px;" @click="editSave">保存</Button>
@@ -150,8 +178,8 @@
     <Modal v-model="monitorShowModal" width="800" :transfer="false" title="视屏监控设备" :footer-hide="true" :mask-closable="false" :closable="false">
       <monitorShow ref="monitorShowModalRef" v-on:quit="monitorShowQuit"></monitorShow>
     </Modal>
-    <Modal v-model="workDataModal" fullscreen width="100%" height="100%" :transfer="false" title="现场作业数据" :footer-hide="true" :mask-closable="false">
-      <workData></workData>
+    <Modal v-model="workDataModal" class="workDataModalclass" fullscreen width="100%" height="100%" :transfer="false" :footer-hide="true" :mask-closable="false" :closable="false">
+      <workData :workId='workId' v-if="workDataModal" v-on:close="closeWorkDataModal"></workData>
     </Modal>
   </div>
 </template>
@@ -180,6 +208,7 @@ export default {
     const beginTime = this.$dateUtils.getTodayStartTime();
     const endTime = this.$dateUtils.getTodayEndTime();
     return {
+      workId:"",
       editSaveSpin:false,
       rowWorkStatus:-1,
       statusList: [
@@ -559,8 +588,12 @@ export default {
     monitorShowQuit(){
       this.monitorShowModal = false;
     },
-    showWorkData(){
+    showWorkData(workId){
+      this.workId = workId;
       this.workDataModal = true;
+    },
+    closeWorkDataModal(){
+      this.workDataModal = false;
     }
   },
   mounted() {
@@ -573,5 +606,9 @@ export default {
 <style>
 .form-input {
   width: 200px;
+}
+.workDataModalclass .ivu-modal-body{
+  background: #1B253D;
+  overflow: hidden;
 }
 </style>

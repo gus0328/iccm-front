@@ -65,19 +65,7 @@
     },
     data() {
       return {
-        typeList:[{
-          value:"0",
-          label:"高压"
-        },{
-          value:"1",
-          label:"低压"
-        },{
-          value:"2",
-          label:"心率"
-        },{
-          value:"3",
-          label:"皮肤温度"
-        }],
+        typeList:[],
         deviceColumns:[
           {
             type:"index",
@@ -235,8 +223,18 @@
       	this.editForm.devices = rows;
       	this.chooseDeviceModal = false;
       },
+      getTypeList(){
+        this.$ajax.request({
+          url:'/system/dict/data/selectDataByType',
+          method:'get',
+          params:{"type":"sitework_weardevice_type"}
+        }).then((res) =>{
+          this.typeList = res.data.data;
+        })
+      }
     },
     mounted() {
+      this.getTypeList();
       this.data = [];
     }
   }

@@ -80,3 +80,10 @@ export const restoreTrash = msg_id => {
     }
   })
 }
+
+export const verifyToken = (token) => {
+  return axios.request({
+    url: 'login/verifyPcToken',
+    method: 'get'
+  })
+}

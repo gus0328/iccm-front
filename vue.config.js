@@ -12,9 +12,9 @@ const resolve = dir => {
 // 例如：https://www.foobar.com/my-app/
 // 需要将它改为'/my-app/'
 // iview-admin线上演示打包路径： https://file.iviewui.com/admin-dist/
-const BASE_URL = process.env.NODE_ENV === 'production'
-  ? '/dist'
-  : '/'
+const BASE_URL = process.env.NODE_ENV === 'production' ?
+  '/dist' :
+  '/'
 
 module.exports = {
   // Project deployment base
@@ -36,6 +36,29 @@ module.exports = {
   },
   // 设为false打包时不生成.map文件
   productionSourceMap: false,
+  configureWebpack: {
+      module: {
+        rules: [
+          {
+            test: /\.m?js$/,
+            include: [
+              resolve('src'),
+              resolve('tests'),
+              resolve('node_modules')
+              // resolve('node_modules/iview/src'),
+              // resolve('node_modules/tree-table-vue/lib'),
+              // resolve('node_modules/v-org-tree/dist'),
+            ],
+            use: {
+              loader: 'babel-loader',
+              options: {
+                presets: ['@babel/preset-env']
+              }
+            }
+          }
+        ]
+      }
+    },
   // 这里写你调用接口的基础路径，来解决跨域，如果设置了代理，那你本地开发环境的axios的baseUrl要写为 '' ，即空字符串
   devServer: {
     proxy: 'http://localhost:8090'

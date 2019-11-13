@@ -151,6 +151,19 @@
           callback();
         }
       };
+      const validateloginName = (rule, value, callback) => {
+        this.$ajax.request({
+          url: "/system/user/checkLoginNameUnique",
+          data: {loginName:value},
+          method: 'post'
+        }).then((res) => {
+          if(res.data.data == "0"){
+            callback();
+          }else{
+            callback(new Error('此用户名已被使用'))
+          }
+        })
+      };
       return {
         deptHeight: 400,
         deptTreeData: [],
@@ -246,6 +259,9 @@
             required: true,
             message: '用户名不能为空',
             trigger: 'blur'
+          },{
+            validator:validateloginName,
+            trigger:'blur'
           }],
           phonenumber: [{
             required: true,
@@ -425,6 +441,18 @@
       },
       editSave() {
         this.$refs.editForm.validate((valid) => {
+          if(this.editForm.postIds.length<1){
+            this.$Message.error("请选择岗位");
+            return;
+          }
+          if(this.editForm.roleIds.length<1){
+            this.$Message.error("请选择角色");
+            return;
+          }
+          if(this.editForm.dept.deptName.length<1){
+            this.$Message.error("请选择部门");
+            return;
+          }
           if (valid) {
             let url = "/system/user/edit";
             if (this.editTitle == "新增") {

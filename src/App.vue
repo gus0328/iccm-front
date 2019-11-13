@@ -5,8 +5,12 @@
 </template>
 
 <script>
+  import Cookies from 'js-cookie';
 export default {
-  name: 'App'
+  name: 'App',
+  beforeCreate() {
+   
+  }
 }
 </script>
 

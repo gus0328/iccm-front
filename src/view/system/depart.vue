@@ -229,11 +229,14 @@
             type: 'string',
             message: '电话不能为空',
             trigger: 'blur'
+          }, {
+            validator: this.$validatePhone,
+            trigger: 'blur'
           }],
           email: [{
             required: true,
             type: 'email',
-            message: '电话不能为空',
+            message: '邮箱不能为空',
             trigger: 'blur'
           }]
         },
@@ -270,6 +273,9 @@
             required: true,
             type: 'string',
             message: '电话不能为空',
+            trigger: 'blur'
+          },{
+            validator: this.$validatePhone,
             trigger: 'blur'
           }],
           email: [{

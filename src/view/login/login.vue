@@ -8,7 +8,8 @@
       <Card icon="log-in" title="欢迎登录" :bordered="false">
         <div class="form-con">
           <login-form ref="loginForm" @on-success-valid="handleSubmit"></login-form>
-          <p class="login-tip">输入任意用户名和密码即可</p>
+          <!-- <p class="login-tip">点击下载视屏插件</p> -->
+          <a href="http://192.168.120.67:8060/download/WebComponentsKit.exe" target="_blank" class="login-tip">点击下载视屏插件</a>
         </div>
       </Card>
     </div>
@@ -50,6 +51,8 @@
           this.$refs.loginForm.changeVaildCode();
         })
       }
+    },
+    mounted() {
     }
   }
 </script>

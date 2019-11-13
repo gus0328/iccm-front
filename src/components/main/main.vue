@@ -216,9 +216,9 @@
         const baseUrl = process.env.NODE_ENV === 'development' ? config.wbUrl.dev : config.wbUrl.pro
         //判断当前浏览器是否支持WebSocket  
         if ('WebSocket' in window) {
-          object.websocket = new WebSocket(baseUrl + "/iccmMessage/" + Cookies.get('token'));
+          object.websocket = new WebSocket(baseUrl + "/iccmMessage/" + sessionStorage.getItme('token'));
         } else if ("MozWebSocket" in window) {
-          object.websocket = new MozWebSocket(baseUrl + "/iccmMessage/" + Cookies.get('token'));
+          object.websocket = new MozWebSocket(baseUrl + "/iccmMessage/" + sessionStorage.getItme('token'));
         } else {
           object.$Message.error("此浏览器不支持消息功能，您可能无法收到消息");
         }
@@ -261,13 +261,13 @@
                 switch (noticeType) {
                   case object.noticeType.lineOutTime:
                     object.timeOut = true;
-                    Cookies.set("token", "");
-                    Cookies.set("access", []);
+                    sessionStorage.setItme('token','');
+                    sessionStorage.setItme("access", '');
                     break; //登录超时
                   case object.noticeType.kickOffTheLine:
                     object.otherLogin = true;
-                    Cookies.set("token", "");
-                    Cookies.set("access", []);
+                    sessionStorage.setItme('token','');
+                    sessionStorage.setItme("access", '');
                     break; //被踢下线
                   case object.noticeType.contractExpiry:
                     object.$store.state.user.unreadCount = data.message;
@@ -350,8 +350,8 @@
       //    this.getUnreadMessageCount()
     },
     beforeDestroy() {
-      Cookies.set("token", "");
-      Cookies.set("access", []);
+      sessionStorage.setItme('token','');
+      sessionStorage.setItme("access", '');
     }
   }
 </script>

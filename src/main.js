@@ -1,5 +1,7 @@
 // The Vue build version to load with the `import` command
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+window.Promise = Promise
+import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
@@ -19,7 +21,6 @@ import VOrgTree from 'v-org-tree'
 import 'v-org-tree/dist/v-org-tree.css'
 import axios from '@/libs/api.request'
 import dateUtils from '@/libs/dateUtils'
-window.Hls = require('hls.js');
 // 实际打包时应该不引入mock
 /* eslint-disable */
 // if (process.env.NODE_ENV !== 'production') require('@/mock')

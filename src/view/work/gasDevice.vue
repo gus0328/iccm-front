@@ -72,22 +72,7 @@
     name: 'gasDevice',
     data() {
       return {
-        typeList:[{
-          value:"0",
-          label:"氧气监测设备"
-        },{
-          value:"1",
-          label:"一氧化碳监测设备"
-        },{
-          value:"2",
-          label:"硫化氢监测设备"
-        },{
-          value:"3",
-          label:"瓦斯监测设备"
-        },{
-          value:"4",
-          label:"温度监测设备"
-        }],
+        typeList:[],
         form: {
           itemCode: "",
           itemName: "",
@@ -258,9 +243,19 @@
       query(){
         this.devicePageNo = 1;
         this.queryDevices();
+      },
+      getTypeList(){
+        this.$ajax.request({
+          url:'/system/dict/data/selectDataByType',
+          method:'get',
+          params:{"type":"sitework_gas_type"}
+        }).then((res) =>{
+          this.typeList = res.data.data;
+        })
       }
     },
     mounted() {
+      this.getTypeList();
       this.rootTableHeight = this.$refs.showContent.offsetHeight - 110;
       this.queryDevices();
     }
