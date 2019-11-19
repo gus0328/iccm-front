@@ -128,7 +128,7 @@
       </div>
     </div>
     <div v-bind:style="{width:videosWidth,height:videosHeight,float:'left'}">
-      <iframe name="workDataVideos" style="width:100%;height:100%;" marginheight="0" marginwidth="0" :src="videosPath"></iframe>
+      <iframe id="siteWorkVideoIframe" name="workDataVideos" style="width:100%;height:100%;" marginheight="0" marginwidth="0" :src="videosPath"></iframe>
      <!-- <div style="heigth:40px;line-height: 40px;">
         <div class="titleLeft"><div class="titleFront"></div></div>
         <div class="titelRight">视屏监控</div>
@@ -203,7 +203,8 @@ export default {
       this.$ajax.request({
         url:'/work/siteWork/getWorkData',
         method:'post',
-        data:this.workData
+        data:this.workData,
+        spin:false
       }).then(res => {
           that.dataJson.remoteData = res.data.data.remoteData;
           that.dataJson.persons = res.data.data.persons;
@@ -255,16 +256,16 @@ export default {
       		let typeIndex = parseInt(devices[i].spareWord1);
       		switch(typeIndex){
       			case 0:
-      				person["heightPress"] = devices[i].itemCode;
+      				person["heightPress"] = parseInt(devices[i].itemCode,10);
       				break;
       			case 1:
-      				person["lowPress"] = devices[i].itemCode;
+      				person["lowPress"] = parseInt(devices[i].itemCode,10);
       				break;
       			case 2:
-      				person["heartRate"] = devices[i].itemCode;
+      				person["heartRate"] = parseInt(devices[i].itemCode,10);
       				break;
       			case 3:
-      				person["skinT"] = devices[i].itemCode;
+      				person["skinT"] = Number(devices[i].itemCode).toFixed(1);
       				break;
       		}
       	}

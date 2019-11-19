@@ -32,19 +32,20 @@
       ]),
       handleSubmit({
         username,
-        password,
-        validateCode
+        password
+        // validateCode
       }) {
         this.handleLogin({
           username,
-          password,
-          validateCode
+          password
+          // validateCode
         }).then(res => {
           this.$refs.loginForm.queryEnd();
+          this.$router.push({
+            name: this.$config.homeName
+          })
           this.getUserInfo().then(res => {
-            this.$router.push({
-              name: this.$config.homeName
-            })
+            
           })
         }, (reason, data) => {
           this.$refs.loginForm.queryEnd();

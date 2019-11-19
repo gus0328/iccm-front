@@ -152,17 +152,22 @@
         }
       };
       const validateloginName = (rule, value, callback) => {
-        this.$ajax.request({
-          url: "/system/user/checkLoginNameUnique",
-          data: {loginName:value},
-          method: 'post'
-        }).then((res) => {
-          if(res.data.data == "0"){
-            callback();
-          }else{
-            callback(new Error('此用户名已被使用'))
-          }
-        })
+        if(this.editTitle == "修改"){
+          callback();
+        }else{
+          this.$ajax.request({
+            url: "/system/user/checkLoginNameUnique",
+            data: {loginName:value},
+            method: 'post'
+          }).then((res) => {
+            if(res.data.data == "0"){
+              callback();
+            }else{
+              callback(new Error('此用户名已被使用'))
+            }
+          })
+        }
+        callback();
       };
       return {
         deptHeight: 400,
@@ -259,9 +264,6 @@
             required: true,
             message: '用户名不能为空',
             trigger: 'blur'
-          },{
-            validator:validateloginName,
-            trigger:'blur'
           }],
           phonenumber: [{
             required: true,

@@ -15,14 +15,14 @@
       </Input>
     </FormItem>
     <FormItem prop="validateCode">
-      <Input type="text" style="width:60%;float:left" v-model="form.validateCode" placeholder="请输入验证码">
+      <!-- <Input type="text" style="width:60%;float:left" v-model="form.validateCode" placeholder="请输入验证码">
         <span slot="prepend">
           <Icon :size="14" type="md-lock"></Icon>
         </span>
       </Input>
       <div id="validCodeIMG" style="width:35%;float:right">
         <img :src="validImg" @click="changeVaildCode" style="width:100%;cursor:pointer;"/>
-      </div>
+      </div> -->
       <Checkbox v-model="form.rememberMe">&nbsp;&nbsp;&nbsp;&nbsp;记住我</Checkbox>
     </FormItem>
     <FormItem>
@@ -52,14 +52,14 @@ export default {
         ]
       }
     },
-    validCodeRules: {
-      type: Array,
-      default: () => {
-        return [
-          { required: true, message: '验证码不能为空', trigger: 'blur' }
-        ]
-      }
-    },
+    // validCodeRules: {
+    //   type: Array,
+    //   default: () => {
+    //     return [
+    //       { required: true, message: '验证码不能为空', trigger: 'blur' }
+    //     ]
+    //   }
+    // },
     rememberMeRules:{
       type:Boolean
     }
@@ -69,7 +69,7 @@ export default {
       form: {
         username: '10289781',
         password: 'admin123',
-        validateCode:"",
+        // validateCode:"",
         rememberMe:false
       },
       submitLoading:false,
@@ -93,8 +93,8 @@ export default {
           this.submitLoading = true;
           this.$emit('on-success-valid', {
             username: this.form.username,
-            password: this.form.password,
-            validateCode:this.form.validateCode
+            password: this.form.password
+            // validateCode:this.form.validateCode
           })
         }
       })

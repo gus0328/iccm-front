@@ -14,7 +14,7 @@
         </Form-item>
         <Form-item prop="workSite">
           <label style="margin-right:10px;">作业地点</label>
-          <Input v-model="form.workSite" style="width:150px" />
+          <Input v-model="form.workSite" style="width:120px" />
         </Form-item>
         <Form-item prop="params">
           <label style="margin-right:10px;">开始时间</label>
@@ -155,7 +155,7 @@
         <Button :disabled="rowWorkStatus>2&&editTitle=='修改'" type="primary" style="width:80px;" @click="editSave">保存</Button>
         <Button type="error" style="width:80px;" @click="editWdClose">取消</Button>
       </div>
-      <Spin size="large" fix v-if="editSaveSpin"></Spin>
+      <!-- <Spin size="large" fix v-if="editSaveSpin"></Spin> -->
     </Modal>
     <Modal v-model="chooseUserModal" width="635" :transfer="false" title="选择用户" :footer-hide="true" :mask-closable="false" :closable="false">
       <chooseUser ref="chooseUserRef" v-on:save="chooseSave" v-on:quit="chooseQuit"></chooseUser>
@@ -607,8 +607,10 @@ export default {
 .form-input {
   width: 200px;
 }
+.workDataModalclass .ivu-modal-content{
+  background:#1B243C;
+}
 .workDataModalclass .ivu-modal-body{
-  background: #1B253D;
   overflow: hidden;
 }
 </style>

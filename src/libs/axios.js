@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
-// import { Spin } from 'iview'
+import { Spin } from 'iview'
 import { Message } from 'iview'
 import { Modal } from 'iview'
 import router from '../router'
@@ -12,7 +12,7 @@ const addErrorLog = errorInfo => {
     mes: statusText,
     url: responseURL
   }
-  if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
+  //if (!responseURL.includes('save_error_logger')) store.dispatch('addErrorLog', info)
 }
 
 class HttpRequest {
@@ -33,18 +33,32 @@ class HttpRequest {
     }
     return config
   }
-  destroy (url) {
+  destroy (url,spin) {
+    Spin.hide()
     delete this.queue[url]
-    if (!Object.keys(this.queue).length) {
-      // Spin.hide()
-    }
+    // if (!Object.keys(this.queue).length&&spin==true) {
+    //    Spin.hide()
+    // }
   }
-  interceptors (instance, url) {
+  interceptors (instance, url,spin) {
     // 请求拦截
     instance.interceptors.request.use(config => {
       // 添加全局的loading...
-      if (!Object.keys(this.queue).length) {
-        // Spin.show() // 不建议开启，因为界面不友好
+      if (!Object.keys(this.queue).length&&spin==true) {
+         Spin.show({
+                    render: (h) => {
+                        return h('div', [
+                            h('Icon', {
+                                'class': 'demo-spin-icon-load',
+                                props: {
+                                    type: 'ios-loading',
+                                    size: 18
+                                }
+                            }),
+                            h('div', 'Loading')
+                        ])
+                    }
+                }) // 不建议开启，因为界面不友好
       }
       this.queue[url] = true
       return config
@@ -54,7 +68,7 @@ class HttpRequest {
 
     // 响应拦截
     instance.interceptors.response.use(res => {
-      this.destroy(url)
+      this.destroy(url,spin)
       if(res.status == 601){
         store.dispatch('foreExit')
       }
@@ -75,7 +89,7 @@ class HttpRequest {
       return { data, status }
 
     }, error => {
-      this.destroy(url)
+      this.destroy(url,spin)
       let errorInfo = error.response
       if (!errorInfo) {
         const { request: { statusText, status }, config } = JSON.parse(JSON.stringify(error))
@@ -90,11 +104,15 @@ class HttpRequest {
     })
   }
   request (options) {
+    var spin = options["spin"];
+    if(spin!=false){
+      spin = true;
+    }
     axios.defaults.withCredentials = true;//携带cookie
     axios.defaults.headers.common["request_source"] = "PC";
     const instance = axios.create()
     options = Object.assign(this.getInsideConfig(), options)
-    this.interceptors(instance, options.url)
+    this.interceptors(instance, options.url,spin)
     return instance(options)
   }
 }

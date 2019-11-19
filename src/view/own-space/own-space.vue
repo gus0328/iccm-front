@@ -74,6 +74,7 @@
 <script>
   import config from '@/config'
   const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
+  var avatorPath = baseUrl+"/upload/uploadAvator?resource=PC"
 export default {
   name: 'ownspace_index',
   data() {
@@ -107,7 +108,7 @@ export default {
     };
     return {
       imgurl:"",
-      avatorPath:"/upload/uploadAvator?resource=PC",
+      avatorPath:avatorPath,
       userForm: {
         userName: '',
         phonenumber: '',

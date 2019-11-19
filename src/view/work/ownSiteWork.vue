@@ -108,7 +108,7 @@
         <Button :disabled="rowWorkStatus>2&&editTitle=='修改'" type="primary" style="width:80px;" @click="editSave">保存</Button>
         <Button type="error" style="width:80px;" @click="editWdClose">取消</Button>
       </div>
-      <Spin size="large" fix v-if="editSaveSpin"></Spin>
+<!--      <Spin size="large" fix v-if="editSaveSpin"></Spin> -->
     </Modal>
     <Modal v-model="editWorkerModal" width="800" :transfer="false" title="作业人员" :footer-hide="true" :mask-closable="false" :closable="false">
       <worker ref="editWorkerRef" v-on:save="workerSave" v-on:quit="workerQuit"></worker>
@@ -525,5 +525,11 @@ export default {
 <style>
 .form-input {
   width: 200px;
+}
+.workDataModalclass .ivu-modal-content{
+  background:#1B243C;
+}
+.workDataModalclass .ivu-modal-body{
+  overflow: hidden;
 }
 </style>

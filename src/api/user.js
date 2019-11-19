@@ -9,35 +9,40 @@ export const login = ({ username, password,validateCode}) => {
   return axios.request({
     url: '/login/login',
     data,
-    method: 'post'
+    method: 'post',
+    spin:false
   })
 }
 
 export const getUserInfo = (token) => {
   return axios.request({
     url: 'main/user/info',
-    method: 'get'
+    method: 'get',
+    spin:false
   })
 }
 
 export const logout = (token) => {
   return axios.request({
     url: '/login/logout',
-    method: 'get'
+    method: 'get',
+    spin:false
   })
 }
 
 export const getUnreadCount = () => {
   return axios.request({
     url: 'message/count',
-    method: 'get'
+    method: 'get',
+    spin:false
   })
 }
 
 export const getMessage = () => {
   return axios.request({
     url: 'message/init',
-    method: 'get'
+    method: 'get',
+    spin:false
   })
 }
 
@@ -45,6 +50,7 @@ export const getContentByMsgId = msg_id => {
   return axios.request({
     url: 'message/content',
     method: 'get',
+    spin:false,
     params: {
       msg_id
     }
