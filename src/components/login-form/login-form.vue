@@ -19,8 +19,8 @@
         <span slot="prepend">
           <Icon :size="14" type="md-lock"></Icon>
         </span>
-      </Input>
-      <div id="validCodeIMG" style="width:35%;float:right">
+      </Input> -->
+     <!-- <div id="validCodeIMG" style="width:35%;float:right">
         <img :src="validImg" @click="changeVaildCode" style="width:100%;cursor:pointer;"/>
       </div> -->
       <Checkbox v-model="form.rememberMe">&nbsp;&nbsp;&nbsp;&nbsp;记住我</Checkbox>
@@ -32,6 +32,7 @@
 </template>
 <script>
 import config from '@/config'
+import Cookies from 'js-cookie'
 const baseUrl = process.env.NODE_ENV === 'development' ? config.baseUrl.dev : config.baseUrl.pro
 export default {
   name: 'LoginForm',
@@ -67,9 +68,9 @@ export default {
   data () {
     return {
       form: {
-        username: '10289781',
-        password: 'admin123',
-        // validateCode:"",
+        username: '',
+        password: '',
+        validateCode:"",
         rememberMe:false
       },
       submitLoading:false,
@@ -86,15 +87,33 @@ export default {
       }
     }
   },
+  mounted() {
+    var username = Cookies.get("username");
+        var rememberMe = Cookies.get("rememberMe");
+        if(username==null){
+          username = "";
+        }
+        if(rememberMe==null){
+          rememberMe = false;
+        }else{
+          rememberMe = true;
+        }
+    this.form.username = username;
+    this.form.rememberMe = rememberMe;
+  },
   methods: {
     handleSubmit () {
       this.$refs.loginForm.validate((valid) => {
         if (valid) {
+          Cookies.set("rememberMe",this.form.rememberMe);
+          if(this.form.rememberMe==true){
+            Cookies.set("username",this.form.username);
+          }
           this.submitLoading = true;
           this.$emit('on-success-valid', {
             username: this.form.username,
-            password: this.form.password
-            // validateCode:this.form.validateCode
+            password: this.form.password,
+            validateCode:this.form.validateCode
           })
         }
       })

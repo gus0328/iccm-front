@@ -106,23 +106,25 @@
           <div class="titleLeft"><div class="titleFront"></div></div>
           <div class="titelRight">人员身体数据</div>
         </div>
-        <div v-bind:style="{width:'100%',height:personsListHeight,background:'#202E47'}">
+        <div v-bind:style="{maxWidth: '100%',height:personsListHeight,background:'#202E47'}">
           <div v-bind:style="{ height: '30px', background: '#141C30', fontSize: '16px', color: '#ffffff' }" class="uni-flex uni-row">
             <div v-bind:style="{ width: '18%', fontWeight: '600', textAlign: 'center', lineHeight: '30px' }">姓名</div>
             <div v-bind:style="{ width: '30%', fontWeight: '600', textAlign: 'center', lineHeight: '30px' }">血压</div>
             <div v-bind:style="{ width: '24%', fontWeight: '600', textAlign: 'center', lineHeight: '30px' }">心率</div>
-            <div v-bind:style="{ width: '28%', fontWeight: '600', textAlign: 'center', lineHeight: '30px' }">皮肤温度</div>
+            <div v-bind:style="{ width: '28%', fontWeight: '600', textAlign: 'center', lineHeight: '30px' }">体温</div>
           </div>
-          <div
-            v-for="(item, index) in dataJson.persons"
-            :key="index"
-            v-bind:style="{ height: '40px', fontSize: '14px', fontWeight: '600', color: '#ffffff', borderBottomStyle: 'dotted' }"
-            class="uni-flex uni-row"
-          >
-            <div v-bind:style="{ width: '18%', textAlign: 'center', lineHeight: '40px' }">{{ item.name }}</div>
-            <div v-bind:style="{ width: '30%', textAlign: 'center', lineHeight: '40px' }">{{ item.bloodPress }}</div>
-            <div v-bind:style="{ width: '24%', textAlign: 'center', lineHeight: '40px' }">{{ item.heartRate }}</div>
-            <div v-bind:style="{ width: '28%', textAlign: 'center', lineHeight: '40px' }">{{ item.skinT }}</div>
+          <div v-bind:style="{height:personsContentHeight,overflowY:'scroll',width:'100%'}">
+            <div
+              v-for="(item, index) in dataJson.persons"
+              :key="index"
+              v-bind:style="{ height: '40px', fontSize: '14px', fontWeight: '600', color: '#ffffff', borderBottomStyle: 'dotted' }"
+              class="uni-flex uni-row"
+            >
+              <div v-bind:style="{ width: '18%', textAlign: 'center', lineHeight: '40px' }">{{ item.name }}</div>
+              <div v-bind:style="{ width: '30%', textAlign: 'center', lineHeight: '40px' }">{{ item.bloodPress }}</div>
+              <div v-bind:style="{ width: '24%', textAlign: 'center', lineHeight: '40px' }">{{ item.heartRate }}</div>
+              <div v-bind:style="{ width: '28%', textAlign: 'center', lineHeight: '40px' }">{{ item.skinT }}</div>
+            </div>
           </div>
         </div>
       </div>
@@ -184,6 +186,7 @@ export default {
       chartWidth:'100px',
       personsHeight:'100px',
       personsListHeight:'100px',
+      personsContentHeight:'100px',
       workRow:{},
       videosPath:"",
       interval:null
@@ -256,16 +259,16 @@ export default {
       		let typeIndex = parseInt(devices[i].spareWord1);
       		switch(typeIndex){
       			case 0:
-      				person["heightPress"] = parseInt(devices[i].itemCode,10);
+      				person["heightPress"] = devices[i].itemCode;
       				break;
       			case 1:
-      				person["lowPress"] = parseInt(devices[i].itemCode,10);
+      				person["lowPress"] = devices[i].itemCode;
       				break;
       			case 2:
-      				person["heartRate"] = parseInt(devices[i].itemCode,10);
+      				person["heartRate"] = devices[i].itemCode;
       				break;
       			case 3:
-      				person["skinT"] = Number(devices[i].itemCode).toFixed(1);
+      				person["skinT"] = devices[i].itemCode;
       				break;
       		}
       	}
@@ -322,7 +325,12 @@ export default {
     this.videosHeight = parseInt(contentHeight) - 40+'px';
     this.personsHeight = parseInt(contentHeight)-400+'px';
     this.personsListHeight = parseInt(contentHeight)-440+'px';
+    this.personsContentHeight = parseInt(contentHeight)-470+'px';
     this.getSiteWorkDetails();
+  },
+  beforeDestroy() {
+    window.frames['workDataVideos'].stop();
+    clearInterval(this.interval);
   }
 };
 </script>
